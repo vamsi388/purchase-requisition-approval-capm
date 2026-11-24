@@ -1,0 +1,501 @@
+/* ==========================================================================
+   Minimal stylesheet: relies on the SAP theme (Horizon / Quartz / dark / HCB).
+   Replace the whole webapp/css/style.css of the admin app with this file.
+   No custom colours, gradients or shell overrides.
+   ========================================================================== */
+
+/* page canvas follows the theme background */
+.sapMPage > section {
+    background: var(--sapBackgroundColor);
+}
+
+/* content container used by all pages */
+.prContent,
+.admContent {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 1rem 1.5rem 2rem;
+}
+
+.admSubtitle.sapMText {
+    color: var(--sapContent_LabelColor);
+}
+
+/* card look used by the Route Simulator page (same as a Fiori Panel) */
+.prCard {
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 1rem;
+    background: var(--sapTile_Background);
+    border: 1px solid var(--sapTile_BorderColor);
+    border-radius: var(--sapElement_BorderCornerRadius, 0.5rem);
+    box-shadow: var(--sapContent_Shadow0);
+}
+
+.prCardTitle.sapMTitle {
+    color: var(--sapTextColor);
+}
+
+/* SVG charts on the dashboard follow the theme font and colours */
+.admChart svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+.admChart svg text {
+    font-family: var(--sapFontFamily);
+}
+
+/* numbers in forms and tables line up */
+.sapMInputBaseInner[type="number"] {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.sapMListTbl .sapMObjectNumber,
+.sapMListTbl .sapMObjectNumberText {
+    font-variant-numeric: tabular-nums;
+}
+
+.sapMListTbl td .sapMHBox {
+    flex-wrap: nowrap;
+    white-space: nowrap;
+}
+
+@media (max-width: 40rem) {
+    .prContent,
+    .admContent { padding: 0.75rem 0.75rem 1.5rem; }
+}
+
+/* ==========================================================================
+   SAP Build style welcome banner + quick start cards
+   ========================================================================== */
+
+.admHero {
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 2rem 2.5rem 6rem;
+    background: linear-gradient(180deg, #c3e4fb 0%, #d9eefd 100%);
+}
+
+/* top curve: large darker ellipse whose lower edge sweeps across the banner */
+.admHero::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    top: -14rem;
+    left: 30%;
+    width: 95%;
+    height: 19rem;
+    border-radius: 50%;
+    background: #a3d9fe;
+}
+
+/* bottom curve: soft wave along the lower edge */
+.admHero::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 7rem;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120' preserveAspectRatio='none'%3E%3Cpath d='M0,80 C220,10 520,10 780,60 C1040,110 1260,110 1440,45 L1440,120 L0,120 Z' fill='%2394cff9' fill-opacity='0.55'/%3E%3C/svg%3E") no-repeat bottom / 100% 100%,
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120' preserveAspectRatio='none'%3E%3Cpath d='M0,100 C300,50 600,40 900,80 C1100,105 1300,100 1440,75 L1440,120 L0,120 Z' fill='%23a9d8fa' fill-opacity='0.6'/%3E%3C/svg%3E") no-repeat bottom / 100% 100%;
+}
+
+/* real content sits above the decorative curves */
+.admHero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.admHeroTitle.sapMTitle {
+    font-size: 2.75rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #1d2d3e;
+}
+
+.admHeroSub.sapMText {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 1.125rem;
+    color: #1d2d3e;
+}
+
+.admHeroMeta {
+    gap: 0.25rem;
+}
+
+.admHeroMeta .sapMObjStatusText,
+.admHeroMeta .sapMObjStatusIcon {
+    color: #1d2d3e;
+}
+
+.admHeroMeta .sapMObjStatusSuccess .sapMObjStatusText,
+.admHeroMeta .sapMObjStatusSuccess .sapMObjStatusIcon {
+    color: var(--sapPositiveTextColor, #107e3e);
+}
+
+.admQuickTitle.sapMTitle {
+    display: block;
+    margin: 1.75rem 0 0.75rem;
+    font-weight: 700;
+    color: #1d2d3e;
+}
+
+/* quick start cards = list items laid out as a wrapping row */
+.admQuickList.sapMList,
+.admQuickList .sapMListUl {
+    background: transparent;
+}
+
+.admQuickList .sapMListUl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0;
+}
+
+.admQuickList .sapMLIB.sapMCLI {
+    box-sizing: border-box;
+    width: 21rem;
+    max-width: 100%;
+    padding: 0;
+    background: #fff;
+    border: 1px solid rgba(29, 45, 62, 0.12);
+    border-radius: 1rem;
+    box-shadow: 0 0 0.125rem rgba(85, 107, 129, 0.25);
+    overflow: hidden;
+    transition: box-shadow 0.15s ease;
+}
+
+.admQuickList .sapMLIB.sapMCLI:hover {
+    background: #fff;
+    box-shadow: 0 0.125rem 0.5rem rgba(85, 107, 129, 0.35);
+}
+
+.admQuickCard {
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+}
+
+.admQuickIcon.sapUiIcon {
+    flex: 0 0 auto;
+    width: 4.5rem;
+    height: 4.5rem;
+    line-height: 4.5rem;
+    font-size: 2rem;
+    text-align: center;
+    color: var(--sapContent_IconColor, #556b82);
+    background: #eef0f2;
+    border-radius: 0.75rem;
+}
+
+.admQuickBody {
+    min-width: 0;
+    gap: 0.25rem;
+}
+
+.admTag.sapMText {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 0.0625rem 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #556b82;
+    background: #e5e8eb;
+    border-radius: 0.5rem;
+}
+
+.admQuickDesc.sapMText {
+    color: var(--sapContent_LabelColor, #556b82);
+    font-size: 0.8125rem;
+}
+
+/* white toolbar under the banner */
+.admSubBar.sapMTB {
+    background: var(--sapBaseColor, #fff);
+    padding: 0.5rem 2.5rem;
+    height: 4rem;
+}
+
+.admSubBarTitle.sapMTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1d2d3e;
+}
+
+@media (max-width: 40rem) {
+    .admHero { padding: 1.25rem; }
+    .admHeroTitle.sapMTitle { font-size: 1.75rem; }
+    .admSubBar.sapMTB { padding: 0.5rem 1rem; }
+}
+
+/* overview section lives inside the blue banner: title row + KPI tiles */
+.admOverview {
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 1.75rem;
+}
+
+.admOverviewHead {
+    margin-bottom: 0.75rem;
+}
+
+
+/* Quick Actions panel (grey area, outside the banner) */
+.admQuickPanel.sapMPanel {
+    border-radius: 0.75rem;
+}
+
+.admQuickPanel .sapMPanelHdr,
+.admQuickPanel .sapMPanelHdrExpandable {
+    font-weight: 700;
+}
+
+.admQuickPanel .admQuickList .sapMLIB.sapMCLI {
+    box-shadow: none;
+    background: var(--sapBackgroundColor, #f5f6f7);
+}
+
+.admQuickPanel .admQuickList .sapMLIB.sapMCLI:hover {
+    background: var(--sapBackgroundColor, #f5f6f7);
+    box-shadow: 0 0.125rem 0.5rem rgba(85, 107, 129, 0.35);
+}
+
+
+/* ==========================================================================
+   Quick Actions: full-width grid with a colour per card
+   ========================================================================== */
+
+.admQuickPanel .admQuickList .sapMListUl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 0;
+}
+
+.admQuickPanel .admQuickList .sapMLIB.sapMCLI {
+    --qa-accent: #0070f2;
+    --qa-tint: #eaf3ff;
+    --qa-tint-strong: #d3e6ff;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    background: var(--qa-tint);
+    border: 1px solid var(--qa-tint-strong);
+    border-radius: 1rem;
+    box-shadow: none;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.admQuickPanel .admQuickList .sapMLIB.sapMCLI:hover {
+    background: var(--qa-tint);
+    border-color: var(--qa-accent);
+    box-shadow: 0 0.125rem 0.5rem rgba(85, 107, 129, 0.3);
+}
+
+.admQuickPanel .admQuickList .sapMLIB.sapMCLI .admQuickIcon.sapUiIcon {
+    color: var(--qa-accent);
+    background: var(--qa-tint-strong);
+}
+
+.admQuickPanel .admQuickList .sapMLIB.sapMCLI .admTag.sapMText {
+    color: var(--qa-accent);
+    background: var(--qa-tint-strong);
+}
+
+/* one colour per card */
+.admQuickPanel .admQaBlue.sapMLIB.sapMCLI   { --qa-accent: #0070f2; --qa-tint: #eaf3ff; --qa-tint-strong: #d3e6ff; }
+.admQuickPanel .admQaGreen.sapMLIB.sapMCLI  { --qa-accent: #188918; --qa-tint: #eaf6ec; --qa-tint-strong: #d1ebd5; }
+.admQuickPanel .admQaPurple.sapMLIB.sapMCLI { --qa-accent: #7858ff; --qa-tint: #f1eeff; --qa-tint-strong: #e1dbff; }
+.admQuickPanel .admQaOrange.sapMLIB.sapMCLI { --qa-accent: #c35500; --qa-tint: #fff3e6; --qa-tint-strong: #ffe2c2; }
+.admQuickPanel .admQaTeal.sapMLIB.sapMCLI   { --qa-accent: #07838f; --qa-tint: #e6f6f7; --qa-tint-strong: #c7ebee; }
+.admQuickPanel .admQaIndigo.sapMLIB.sapMCLI { --qa-accent: #4b53bc; --qa-tint: #eceefb; --qa-tint-strong: #d9dcf5; }
+
+/* tablet: 2 columns, phone: 1 column */
+@media (max-width: 75rem) {
+    .admQuickPanel .admQuickList .sapMListUl {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 40rem) {
+    .admQuickPanel .admQuickList .sapMListUl {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================================
+   Configuration overview tiles: full-width grid with a colour per tile
+   ========================================================================== */
+
+.admKpiRow.sapMHBox {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+.admKpiRow .sapMGT {
+    --kpi-accent: #0070f2;
+    --kpi-tint: #eaf3ff;
+    --kpi-tint-strong: #d3e6ff;
+    width: 100% !important;
+    margin: 0 !important;
+    background: var(--kpi-tint);
+    border: 1px solid var(--kpi-tint-strong);
+    border-radius: 1rem;
+    box-shadow: none;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.admKpiRow .sapMGT:hover,
+.admKpiRow .sapMGT:focus {
+    background: var(--kpi-tint);
+    border-color: var(--kpi-accent);
+    box-shadow: 0 0.125rem 0.5rem rgba(85, 107, 129, 0.3);
+}
+
+.admKpiRow .sapMGT .sapMGTHdrTxt {
+    color: #1d2d3e;
+    font-weight: 700;
+}
+
+.admKpiRow .sapMGT .sapMNCIconImage,
+.admKpiRow .sapMGT .sapUiIcon {
+    color: var(--kpi-accent);
+}
+
+/* one colour per tile */
+.admKpiBlue.sapMGT   { --kpi-accent: #0070f2; --kpi-tint: #eaf3ff; --kpi-tint-strong: #d3e6ff; }
+.admKpiGreen.sapMGT  { --kpi-accent: #188918; --kpi-tint: #eaf6ec; --kpi-tint-strong: #d1ebd5; }
+.admKpiPurple.sapMGT { --kpi-accent: #7858ff; --kpi-tint: #f1eeff; --kpi-tint-strong: #e1dbff; }
+.admKpiOrange.sapMGT { --kpi-accent: #c35500; --kpi-tint: #fff3e6; --kpi-tint-strong: #ffe2c2; }
+
+/* tablet: 2 columns, phone: 1 column */
+@media (max-width: 75rem) {
+    .admKpiRow.sapMHBox {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 40rem) {
+    .admKpiRow.sapMHBox {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* ==========================================================================
+   Configuration overview tiles: compact, rounded on all four sides, even spacing
+   ========================================================================== */
+
+.admKpiRow.sapMHBox {
+    gap: 1.25rem;
+    padding: 0.25rem;               /* room so the rounded edges and shadow are never clipped */
+    box-sizing: border-box;
+}
+
+.admKpiRow .sapMGT,
+.admKpiRow .sapMGT::before,
+.admKpiRow .sapMGT::after {
+    border-radius: 1rem;            /* same curve on all four corners */
+}
+
+.admKpiRow .sapMGT {
+    height: 8.5rem !important;      /* was ~11rem */
+    min-height: 0 !important;
+    overflow: hidden;               /* content can never square off the corners */
+    box-sizing: border-box;
+    padding: 0;
+}
+
+/* tighter inner spacing */
+.admKpiRow .sapMGT .sapMGTHdrContent,
+.admKpiRow .sapMGT .sapMGTContent {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.admKpiRow .sapMGT .sapMGTHdrTxt {
+    font-size: 0.9375rem;
+}
+
+.admKpiRow .sapMGT .sapMGTSubHdrTxt {
+    font-size: 0.8125rem;
+}
+
+/* smaller number and icon */
+.admKpiRow .sapMGT .sapMNCValue,
+.admKpiRow .sapMGT .sapMNCLargeValue {
+    font-size: 1.75rem;
+}
+
+.admKpiRow .sapMGT .sapMNCIconImage {
+    font-size: 1.5rem;
+}
+
+/* small footer text ("of 4 total") stays inside the tile */
+.admKpiRow .sapMGT .sapMTileCntFtrTxt {
+    font-size: 0.75rem;
+}
+
+/* ==========================================================================
+   Welcome banner: floating card, rounded on all four sides, more compact
+   ========================================================================== */
+
+.admHero {
+    width: calc(100% - 3rem);
+    margin: 1rem 1.5rem 0;              /* space on left, right and top */
+    padding: 1.5rem 2rem 4rem;          /* was 2rem 2.5rem 6rem */
+    border-radius: 1.5rem;              /* all four corners */
+    overflow: hidden;                   /* clips the wave shapes to the curve */
+    box-shadow: 0 0 0.125rem rgba(85, 107, 129, 0.25);
+}
+
+/* bottom wave a little lower so the card is shorter */
+.admHero::after {
+    height: 5rem;
+}
+
+/* smaller greeting */
+.admHeroTitle.sapMTitle {
+    font-size: 2.25rem;
+}
+
+.admHeroSub.sapMText {
+    margin-top: 0.25rem;
+    font-size: 1rem;
+}
+
+/* overview block sits closer to the greeting */
+.admOverview {
+    margin-top: 1rem;
+}
+
+.admOverviewHead {
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 40rem) {
+    .admHero {
+        width: calc(100% - 1.5rem);
+        margin: 0.75rem 0.75rem 0;
+        padding: 1.25rem 1rem 3rem;
+        border-radius: 1rem;
+    }
+
+    .admHeroTitle.sapMTitle {
+        font-size: 1.75rem;
+    }
+}

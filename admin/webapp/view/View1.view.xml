@@ -1,0 +1,1352 @@
+<mvc:View controllerName="admin.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:tnt="sap.tnt"
+    xmlns:uxap="sap.uxap"
+    displayBlock="true" height="100%">
+
+    <tnt:ToolPage id="toolPage" sideExpanded="{ui>/sideExpanded}" busy="{ui>/busy}" busyIndicatorDelay="0">
+
+        <!-- ================= HEADER (standard SAP ToolHeader) ================= -->
+        <tnt:header>
+            <tnt:ToolHeader>
+                <Button icon="sap-icon://menu2" type="Transparent" tooltip="{i18n>toggleMenu}" press=".onToggleSide">
+                    <layoutData><OverflowToolbarLayoutData priority="NeverOverflow" /></layoutData>
+                </Button>
+                <Title text="{i18n>appHeader}" wrapping="false">
+                    <layoutData><OverflowToolbarLayoutData priority="Disappear" /></layoutData>
+                </Title>
+                <ToolbarSpacer />
+                <ToolbarSpacer />
+                <Button icon="sap-icon://refresh" type="Transparent" tooltip="{i18n>refresh}" press=".onRefreshAll" />
+                <Button icon="sap-icon://bell" type="Transparent" tooltip="{i18n>tabHealth}" press=".onOpenHealth">
+                    <customData>
+                        <BadgeCustomData key="badge" value="{ui>/badge}" />
+                    </customData>
+                </Button>
+            </tnt:ToolHeader>
+        </tnt:header>
+
+        <!-- ================= SIDE NAVIGATION (standard SAP theme) ================= -->
+        <tnt:sideContent>
+            <tnt:SideNavigation id="sideNav" selectedKey="{ui>/page}" itemSelect=".onNavSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem key="dashboard" text="{i18n>navDashboard}" icon="sap-icon://home" />
+                    <tnt:NavigationListItem key="matrix" text="{i18n>tabMatrix}" icon="sap-icon://org-chart" />
+                    <tnt:NavigationListItem key="cc" text="{i18n>tabCc}" icon="sap-icon://money-bills" />
+                    <tnt:NavigationListItem key="cat" text="{i18n>tabCat}" icon="sap-icon://tag" />
+                    <tnt:NavigationListItem key="mat" text="{i18n>tabMat}" icon="sap-icon://product" />
+                    <tnt:NavigationListItem key="sim" text="{i18n>tabSim}" icon="sap-icon://journey-arrive" />
+                    <tnt:NavigationListItem key="health" text="{i18n>tabHealth}" icon="sap-icon://stethoscope" />
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+
+        <!-- ================= MAIN CONTENT ================= -->
+        <tnt:mainContents>
+            <NavContainer id="nav" initialPage="dashboardPage">
+
+                <!-- ========== DASHBOARD ========== -->
+                <Page id="dashboardPage" showHeader="false">
+                    <content>
+                        <!-- ===== SAP Build style welcome banner with quick start cards ===== -->
+                        <VBox class="admHero">
+                            <HBox justifyContent="SpaceBetween" alignItems="Start" wrap="Wrap">
+                                <VBox class="admHeroText">
+                                    <Title text="{ui>/greeting}" level="H1" titleStyle="H1" class="admHeroTitle" />
+                                    <Text text="{i18n>heroSub}" class="admHeroSub" />
+                                </VBox>
+                                <HBox alignItems="Center" class="admHeroMeta">
+                                    <ObjectStatus text="{ui>/todayText}" icon="sap-icon://calendar" class="sapUiSmallMarginEnd" />
+                                </HBox>
+                            </HBox>
+
+                            <!-- overview section inside the banner: title + KPI tiles -->
+                            <VBox class="admOverview">
+                                <HBox justifyContent="SpaceBetween" alignItems="Center" class="admOverviewHead">
+                                    <Title text="{i18n>overviewTitle}" level="H2" titleStyle="H2" class="admSubBarTitle" />
+                                    <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press=".onRefreshAll" />
+                                </HBox>
+                                <!-- KPI tiles -->
+                                <HBox renderType="Bare" class="admKpiRow">
+                                    <GenericTile class="admKpiBlue sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                                 width="100%" header="{i18n>statSteps}" subheader="{i18n>statStepsHint}"
+                                                 tooltip="{i18n>statSteps}" press=".onOpenMatrix">
+                                        <TileContent>
+                                            <NumericContent value="{ui>/stats/steps}" icon="sap-icon://org-chart"
+                                                            withMargin="false" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                    <GenericTile class="admKpiGreen sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                                 width="100%" header="{i18n>statCc}" subheader="{i18n>statCcHint}"
+                                                 tooltip="{i18n>statCc}" press=".onOpenCc">
+                                        <TileContent footer="{ui>/ccTotalText}">
+                                            <NumericContent value="{ui>/stats/ccActive}"
+                                                            icon="sap-icon://money-bills" withMargin="false" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                    <GenericTile class="admKpiPurple sapUiTinyMarginEnd sapUiTinyMarginBottom"
+                                                 width="100%" header="{i18n>statCat}" subheader="{i18n>statCatHint}"
+                                                 tooltip="{i18n>statCat}" press=".onOpenCat">
+                                        <TileContent>
+                                            <NumericContent value="{ui>/stats/cats}" icon="sap-icon://tag"
+                                                            withMargin="false" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                    <GenericTile class="admKpiOrange sapUiTinyMarginBottom"
+                                                 width="100%" header="{i18n>statHealth}" subheader="{i18n>statHealthHint}"
+                                                 tooltip="{i18n>statHealth}" press=".onOpenHealth">
+                                        <TileContent>
+                                            <NumericContent value="{ui>/healthCount}" icon="sap-icon://stethoscope" withMargin="false"
+                                                            valueColor="{= ${ui>/healthCount} > 0 ? 'Error' : 'Good' }" />
+                                        </TileContent>
+                                    </GenericTile>
+                                </HBox>
+                            </VBox>
+                        </VBox>
+
+                        <VBox class="admContent">
+                            <MessageStrip text="{i18n>errNoRole}" type="Error" showIcon="true"
+                                          visible="{ui>/forbidden}" class="sapUiSmallMarginBottom" />
+
+                            <!-- Quick Actions: outside the banner, collapsible -->
+                            <l:Grid defaultSpan="XL12 L12 M12 S12" hSpacing="1" vSpacing="1" class="sapUiSmallMarginBottom">
+                                <Panel headerText="{i18n>quickTitle}" expandable="true" expanded="true"
+                                       class="admQuickPanel">
+                                    <List class="admQuickList" showSeparators="None" backgroundDesign="Transparent">
+                                        <CustomListItem type="Active" press=".onAddMatrix" class="admQaBlue">
+                                            <HBox alignItems="Center" class="admQuickCard">
+                                                <core:Icon src="sap-icon://org-chart" class="admQuickIcon" />
+                                                <VBox class="admQuickBody">
+                                                    <Text text="{i18n>qTagMatrix}" class="admTag" />
+                                                    <Title text="{i18n>addStep}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qDescStep}" class="admQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                        <CustomListItem type="Active" press=".onAddCc" class="admQaGreen">
+                                            <HBox alignItems="Center" class="admQuickCard">
+                                                <core:Icon src="sap-icon://money-bills" class="admQuickIcon" />
+                                                <VBox class="admQuickBody">
+                                                    <Text text="{i18n>qTagBudget}" class="admTag" />
+                                                    <Title text="{i18n>addCc}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qDescCc}" class="admQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                        <CustomListItem type="Active" press=".onAddCat" class="admQaPurple">
+                                            <HBox alignItems="Center" class="admQuickCard">
+                                                <core:Icon src="sap-icon://tag" class="admQuickIcon" />
+                                                <VBox class="admQuickBody">
+                                                    <Text text="{i18n>qTagCatalog}" class="admTag" />
+                                                    <Title text="{i18n>addCat}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qDescCat}" class="admQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                        <CustomListItem type="Active" press=".onOpenSim" class="admQaOrange">
+                                            <HBox alignItems="Center" class="admQuickCard">
+                                                <core:Icon src="sap-icon://journey-arrive" class="admQuickIcon" />
+                                                <VBox class="admQuickBody">
+                                                    <Text text="{i18n>qTagTest}" class="admTag" />
+                                                    <Title text="{i18n>qaSimulate}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qDescSim}" class="admQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                        <CustomListItem type="Active" press=".onOpenHealth" class="admQaTeal">
+                                            <HBox alignItems="Center" class="admQuickCard">
+                                                <core:Icon src="sap-icon://stethoscope" class="admQuickIcon" />
+                                                <VBox class="admQuickBody">
+                                                    <Text text="{i18n>qTagCheck}" class="admTag" />
+                                                    <Title text="{i18n>healthRun}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qDescHealth}" class="admQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                        <CustomListItem type="Active" press=".onRefreshAll" class="admQaIndigo">
+                                            <HBox alignItems="Center" class="admQuickCard">
+                                                <core:Icon src="sap-icon://refresh" class="admQuickIcon" />
+                                                <VBox class="admQuickBody">
+                                                    <Text text="{i18n>qTagData}" class="admTag" />
+                                                    <Title text="{i18n>refresh}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qDescRefresh}" class="admQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                    </List>
+                                </Panel>
+                            </l:Grid>
+
+                            <!-- row 2: budget usage, step coverage, activity -->
+                            <l:Grid defaultSpan="XL4 L6 M12 S12" hSpacing="1" vSpacing="1" class="sapUiSmallMarginBottom">
+                                <Panel class="sapUiNoContentPadding">
+                                    <headerToolbar>
+                                        <OverflowToolbar>
+                                            <Title text="{i18n>cardBudget}" />
+                                            <ToolbarSpacer />
+                                            <Link text="{i18n>viewAll}" press=".onOpenCc" />
+                                        </OverflowToolbar>
+                                    </headerToolbar>
+                                    <Table items="{dash>/topCc}" noDataText="{i18n>noRows}">
+                                        <columns>
+                                            <Column><Text text="{i18n>colCode}" /></Column>
+                                            <Column width="8rem"><Text text="{i18n>colUsage}" /></Column>
+                                            <Column width="6rem"><Text text="{i18n>colStatus}" /></Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem>
+                                                <cells>
+                                                    <ObjectIdentifier title="{dash>code}" text="{dash>name}" />
+                                                    <ProgressIndicator percentValue="{dash>pct}" displayValue="{dash>pctText}"
+                                                                       state="{dash>state}" width="100%" />
+                                                    <ObjectStatus text="{dash>statusText}" state="{dash>state}" />
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </Panel>
+
+                                <Panel>
+                                    <headerToolbar>
+                                        <OverflowToolbar>
+                                            <Title text="{i18n>cardSteps}" />
+                                            <ToolbarSpacer />
+                                            <Link text="{i18n>viewAll}" press=".onOpenMatrix" />
+                                        </OverflowToolbar>
+                                    </headerToolbar>
+                                    <core:HTML id="chartSteps" preferDOM="false" content="&lt;div&gt;&lt;/div&gt;" />
+                                </Panel>
+
+                                <Panel class="sapUiNoContentPadding">
+                                    <headerToolbar>
+                                        <OverflowToolbar>
+                                            <Title text="{i18n>cardActivity}" />
+                                            <ToolbarSpacer />
+                                            <Link text="{i18n>viewAll}" press=".onOpenHealth" />
+                                        </OverflowToolbar>
+                                    </headerToolbar>
+                                    <MessageStrip text="{i18n>healthOk}" type="Success" showIcon="true"
+                                                  visible="{= ${dash>/activity}.length === 0 }" class="sapUiSmallMargin" />
+                                    <List items="{dash>/activity}" showSeparators="Inner">
+                                        <CustomListItem type="Active" press=".onActivityPress">
+                                            <HBox alignItems="Center" class="sapUiSmallMargin">
+                                                <ObjectStatus icon="sap-icon://message-warning" state="{dash>type}"
+                                                              class="sapUiSmallMarginEnd" />
+                                                <Text text="{dash>text}" maxLines="2" />
+                                            </HBox>
+                                        </CustomListItem>
+                                    </List>
+                                </Panel>
+                            </l:Grid>
+
+                            <!-- row 3: budget by org unit, steps table -->
+                            <l:Grid defaultSpan="XL4 L6 M12 S12" hSpacing="1" vSpacing="1">
+                                <Panel>
+                                    <headerToolbar>
+                                        <OverflowToolbar><Title text="{i18n>cardOrg}" /></OverflowToolbar>
+                                    </headerToolbar>
+                                    <core:HTML id="chartOrg" preferDOM="false" content="&lt;div&gt;&lt;/div&gt;" />
+                                </Panel>
+
+                                <Panel class="sapUiNoContentPadding">
+                                    <layoutData><l:GridData span="XL8 L6 M12 S12" /></layoutData>
+                                    <headerToolbar>
+                                        <OverflowToolbar>
+                                            <Title text="{i18n>cardStepsTable}" />
+                                            <ToolbarSpacer />
+                                            <Link text="{i18n>viewAll}" press=".onOpenMatrix" />
+                                        </OverflowToolbar>
+                                    </headerToolbar>
+                                    <Table items="{dash>/stepsTop}" noDataText="{i18n>noRows}">
+                                        <columns>
+                                            <Column width="4rem"><Text text="{i18n>colStep}" /></Column>
+                                            <Column width="7rem"><Text text="{i18n>colRole}" /></Column>
+                                            <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colScope}" /></Column>
+                                            <Column hAlign="End" minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colRange}" /></Column>
+                                            <Column width="6rem"><Text text="{i18n>colActive}" /></Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem>
+                                                <cells>
+                                                    <Text text="{dash>stepNo}" />
+                                                    <ObjectStatus text="{dash>approverRole}"
+                                                                  state="{ path: 'dash>approverRole', formatter: '.roleState' }" />
+                                                    <Text text="{dash>scope}" maxLines="1" />
+                                                    <Text text="{dash>range}" />
+                                                    <ObjectStatus text="{dash>activeText}" state="{dash>activeState}" />
+                                                </cells>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </Panel>
+                            </l:Grid>
+                        </VBox>
+                    </content>
+                </Page>
+
+                <!-- ========== APPROVAL MATRIX ========== -->
+                <Page id="matrixPage" showHeader="false">
+                    <content>
+                        <VBox class="prContent">
+                            <MessageStrip text="{i18n>errNoRole}" type="Error" showIcon="true"
+                                          visible="{ui>/forbidden}" class="sapUiSmallMarginBottom" />
+                            <Table id="matrixTable" items="{data>/matrixView}" growing="true" growingThreshold="25"
+                                   sticky="ColumnHeaders,HeaderToolbar" noDataText="{i18n>noRows}">
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <Title text="{i18n>matrixTitle} ({ui>/matrixCount})" />
+                                        <ToolbarSpacer />
+                                        <Select width="9rem" selectedKey="{ui>/matrixActive}" change=".onViewChange">
+                                            <core:Item key="All" text="{i18n>fAll}" />
+                                            <core:Item key="Active" text="{i18n>fActive}" />
+                                            <core:Item key="Inactive" text="{i18n>fInactive}" />
+                                        </Select>
+                                        <SearchField width="15rem" placeholder="{i18n>searchMatrix}"
+                                                     value="{ui>/matrixSearch}" search=".onMatrixSearch" liveChange=".onMatrixSearch" />
+                                        <Button text="{i18n>addStep}" icon="sap-icon://add" type="Emphasized" press=".onAddMatrix" />
+                                    </OverflowToolbar>
+                                </headerToolbar>
+                                <columns>
+                                    <Column width="5rem"><Text text="{i18n>colStep}" /></Column>
+                                    <Column><Text text="{i18n>colRole}" /></Column>
+                                    <Column><Text text="{i18n>colOrgUnit}" /></Column>
+                                    <Column><Text text="{i18n>colCategory}" /></Column>
+                                    <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colCurrency}" /></Column>
+                                    <Column hAlign="End"><Text text="{i18n>colFrom}" /></Column>
+                                    <Column hAlign="End"><Text text="{i18n>colTo}" /></Column>
+                                    <Column width="6rem"><Text text="{i18n>colActive}" /></Column>
+                                    <Column width="10rem" hAlign="End"><Text text="{i18n>colActions}" /></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <Text text="{data>stepNo}" />
+                                            <ObjectStatus text="{data>approverRole}"
+                                                          state="{ path: 'data>approverRole', formatter: '.roleState' }" />
+                                            <Text text="{= ${data>orgUnit} || ${i18n>any} }" />
+                                            <Text text="{= ${data>category_code} || ${i18n>any} }" />
+                                            <Text text="{= ${data>currency_code} || ${i18n>any} }" />
+                                            <Text text="{ path: 'data>minAmount', formatter: '.fmtAmount' }" />
+                                            <Text text="{ path: 'data>maxAmount', formatter: '.fmtMax' }" />
+                                            <Switch state="{data>active}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}"
+                                                    change=".onToggleMatrix" />
+                                            <HBox justifyContent="End">
+                                                <Button icon="sap-icon://edit" type="Transparent" tooltip="{i18n>edit}" press=".onEditMatrix" />
+                                                <Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>delete}" press=".onDeleteMatrix" />
+                                                <Button icon="sap-icon://navigation-right-arrow" type="Transparent"
+                                                        tooltip="{i18n>openDetails}" press=".onOpenMxDetail" />
+                                            </HBox>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </VBox>
+                    </content>
+                </Page>
+
+                <!-- ========== COST CENTRES ========== -->
+                <Page id="ccPage" showHeader="false">
+                    <content>
+                        <VBox class="prContent">
+                            <Table id="ccTable" items="{data>/ccView}" growing="true" growingThreshold="25"
+                                   sticky="ColumnHeaders,HeaderToolbar" noDataText="{i18n>noRows}">
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <Title text="{i18n>ccTitle} ({ui>/ccCount})" />
+                                        <ToolbarSpacer />
+                                        <Select width="9rem" selectedKey="{ui>/ccActive}" change=".onViewChange">
+                                            <core:Item key="All" text="{i18n>fAll}" />
+                                            <core:Item key="Active" text="{i18n>fActive}" />
+                                            <core:Item key="Inactive" text="{i18n>fInactive}" />
+                                        </Select>
+                                        <SearchField width="15rem" placeholder="{i18n>searchCc}"
+                                                     value="{ui>/ccSearch}" search=".onCcSearch" liveChange=".onCcSearch" />
+                                        <Button text="{i18n>addCc}" icon="sap-icon://add" type="Emphasized" press=".onAddCc" />
+                                    </OverflowToolbar>
+                                </headerToolbar>
+                                <columns>
+                                    <Column width="5rem"><Text text="{i18n>colCode}" /></Column>
+                                    <!-- no width: takes all remaining space -->
+                                    <Column><Text text="{i18n>colName}" /></Column>
+                                    <Column width="4rem"><Text text="{i18n>colOrgUnit}" /></Column>
+                                    <Column width="7.5rem" hAlign="End"><Text text="{i18n>colBudget}" /></Column>
+                                    <Column width="6.5rem" hAlign="End"><Text text="{i18n>colCommitted}" /></Column>
+                                    <Column width="6.5rem" hAlign="End"><Text text="{i18n>colAvailable}" /></Column>
+                                    <Column width="6.5rem"><Text text="{i18n>colUsage}" /></Column>
+                                    <Column width="4.5rem"><Text text="{i18n>colActive}" /></Column>
+                                    <Column width="7rem" hAlign="End"><Text text="{i18n>colActions}" /></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem vAlign="Middle" type="Active" press=".onOpenCcDetail">
+                                        <cells>
+                                            <ObjectIdentifier title="{data>code}" />
+                                            <Text text="{data>name}" maxLines="2" tooltip="{data>name}" />
+                                            <Text text="{data>orgUnit}" wrapping="false" />
+                                            <ObjectNumber number="{ path: 'data>budgetAmount', formatter: '.fmtAmount' }"
+                                                          unit="{data>currency_code}" />
+                                            <Text text="{ path: 'data>committedAmount', formatter: '.fmtAmount' }" wrapping="false" />
+                                            <ObjectNumber number="{ path: 'data>availableBudget', formatter: '.fmtAmount' }"
+                                                          state="{= ${data>availableBudget} &lt; 0 ? 'Error' : 'Success' }" />
+                                            <ProgressIndicator showValue="true" width="100%"
+                                                percentValue="{ parts: ['data>committedAmount', 'data>budgetAmount'], formatter: '.usage' }"
+                                                displayValue="{ parts: ['data>committedAmount', 'data>budgetAmount'], formatter: '.usageText' }"
+                                                state="{ parts: ['data>committedAmount', 'data>budgetAmount'], formatter: '.usageState' }" />
+                                            <Switch state="{data>active}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}"
+                                                    change=".onToggleCc" />
+                                            <HBox justifyContent="End">
+                                                <Button icon="sap-icon://edit" type="Transparent" tooltip="{i18n>edit}" press=".onEditCc" />
+                                                <Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>delete}" press=".onDeleteCc" />
+                                                <Button icon="sap-icon://navigation-right-arrow" type="Transparent"
+                                                        tooltip="{i18n>openDetails}" press=".onOpenCcDetail" />
+                                            </HBox>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </VBox>
+                    </content>
+                </Page>
+
+                <!-- ========== PURCHASE CATEGORIES ========== -->
+                <Page id="catPage" showHeader="false">
+                    <content>
+                        <VBox class="prContent">
+                            <Table id="catTable" items="{data>/catView}" sticky="ColumnHeaders,HeaderToolbar"
+                                   noDataText="{i18n>noRows}">
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <Title text="{i18n>catTitle} ({ui>/catCount})" />
+                                        <ToolbarSpacer />
+                                        <SearchField width="15rem" placeholder="{i18n>searchCat}"
+                                                     value="{ui>/catSearch}" search=".onCatSearch" liveChange=".onCatSearch" />
+                                        <Button text="{i18n>addCat}" icon="sap-icon://add" type="Emphasized" press=".onAddCat" />
+                                    </OverflowToolbar>
+                                </headerToolbar>
+                                <columns>
+                                    <Column width="8rem"><Text text="{i18n>colCode}" /></Column>
+                                    <Column><Text text="{i18n>colName}" /></Column>
+                                    <Column hAlign="End" width="10rem"><Text text="{i18n>colTaxRate}" /></Column>
+                                    <Column width="10rem" hAlign="End"><Text text="{i18n>colActions}" /></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem>
+                                        <cells>
+                                            <ObjectIdentifier title="{data>code}" />
+                                            <Text text="{data>name}" />
+                                            <Text text="{data>defaultTaxRate} %" />
+                                            <HBox justifyContent="End">
+                                                <Button icon="sap-icon://edit" type="Transparent" tooltip="{i18n>edit}" press=".onEditCat" />
+                                                <Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>delete}" press=".onDeleteCat" />
+                                                <Button icon="sap-icon://navigation-right-arrow" type="Transparent"
+                                                        tooltip="{i18n>openDetails}" press=".onOpenCatDetail" />
+                                            </HBox>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </VBox>
+                    </content>
+                </Page>
+
+                <!-- ========== MATERIALS ========== -->
+                <Page id="matPage" showHeader="false">
+                    <content>
+                        <VBox class="prContent">
+                            <Table id="matTable" items="{data>/matView}" growing="true" growingThreshold="25"
+                                   sticky="ColumnHeaders,HeaderToolbar" noDataText="{i18n>noRows}">
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <Title text="{i18n>matTitle} ({ui>/matCount})" />
+                                        <ToolbarSpacer />
+                                        <SearchField width="15rem" placeholder="{i18n>searchMat}"
+                                                     value="{ui>/matSearch}" search=".onMatSearch" liveChange=".onMatSearch" />
+                                        <Button text="{i18n>addMat}" icon="sap-icon://add" type="Emphasized" press=".onAddMat" />
+                                    </OverflowToolbar>
+                                </headerToolbar>
+                                <columns>
+                                    <Column width="9rem"><Text text="{i18n>colCode}" /></Column>
+                                    <Column><Text text="{i18n>colDescription}" /></Column>
+                                    <Column width="6rem"><Text text="{i18n>colUom}" /></Column>
+                                    <Column width="9rem" hAlign="End"><Text text="{i18n>colUnitPrice}" /></Column>
+                                    <Column width="10rem" hAlign="End"><Text text="{i18n>colActions}" /></Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem vAlign="Middle" type="Active" press=".onOpenMatDetail">
+                                        <cells>
+                                            <ObjectIdentifier title="{data>code}" />
+                                            <Text text="{data>description}" maxLines="2" tooltip="{data>description}" />
+                                            <Text text="{data>uom}" />
+                                            <Text text="{ path: 'data>unitPrice', formatter: '.fmtAmount' }" />
+                                            <HBox justifyContent="End">
+                                                <Button icon="sap-icon://edit" type="Transparent" tooltip="{i18n>edit}" press=".onEditMat" />
+                                                <Button icon="sap-icon://delete" type="Transparent" tooltip="{i18n>delete}" press=".onDeleteMat" />
+                                                <Button icon="sap-icon://navigation-right-arrow" type="Transparent"
+                                                        tooltip="{i18n>openDetails}" press=".onOpenMatDetail" />
+                                            </HBox>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                        </VBox>
+                    </content>
+                </Page>
+
+                <!-- ========== ROUTE SIMULATOR ========== -->
+                <Page id="simPage" showHeader="false">
+                    <content>
+                        <VBox class="prContent">
+                            <MessageStrip text="{i18n>simHint}" type="Information" showIcon="true"
+                                          class="sapUiSmallMarginBottom" />
+                            <VBox class="prCard">
+                                <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="1" columnsL="1" columnsXL="1"
+                                              title="{i18n>simInput}">
+                                    <!-- 1. cost centre -->
+                                    <Label text="{i18n>simCostCentre}" required="true" />
+                                    <ComboBox selectedKey="{sim>/costCentre}" showSecondaryValues="true"
+                                              placeholder="{i18n>phSimCc}" width="100%"
+                                              selectionChange=".onSimCostCentre"
+                                              items="{ path: 'data>/costCentres', sorter: { path: 'code' } }">
+                                        <core:ListItem key="{data>code}" text="{data>code} - {data>name}"
+                                                       additionalText="{data>orgUnit}" />
+                                    </ComboBox>
+
+                                    <!-- 2. total amount, directly below the cost centre -->
+                                    <Label text="{i18n>simAmount}" required="true" />
+                                    <StepInput value="{sim>/amount}" min="0" step="10000" largerStep="100000"
+                                               displayValuePrecision="0" description="{sim>/currency}"
+                                               width="100%" change=".onSimChange" tooltip="{i18n>phSimAmount}" />
+
+                                    <!-- 3. currency -->
+                                    <Label text="{i18n>simCurrency}" />
+                                    <ComboBox selectedKey="{sim>/currency}" showSecondaryValues="true"
+                                              placeholder="{i18n>phSimCurrency}" width="100%"
+                                              selectionChange=".onSimChange"
+                                              items="{ path: 'data>/currencies', sorter: { path: 'code' } }">
+                                        <core:ListItem key="{data>code}" text="{data>code}" additionalText="{data>name}" />
+                                    </ComboBox>
+
+                                    <!-- 4. purchase category -->
+                                    <Label text="{i18n>simCategory}" required="true" />
+                                    <ComboBox selectedKey="{sim>/category}" showSecondaryValues="true"
+                                              placeholder="{i18n>phSimCategory}" width="100%"
+                                              selectionChange=".onSimChange"
+                                              items="{ path: 'data>/categories', sorter: { path: 'code' } }">
+                                        <core:ListItem key="{data>code}" text="{data>label}" />
+                                    </ComboBox>
+                                </f:SimpleForm>
+                            </VBox>
+
+                            <VBox class="prCard sapUiSmallMarginTop" visible="{sim>/hasResult}">
+                                <Title text="{i18n>simResult}" level="H3" class="prCardTitle sapUiSmallMarginBottom" />
+                                <MessageStrip text="{sim>/message}" type="{sim>/type}" showIcon="true"
+                                              class="sapUiSmallMarginBottom" />
+                                <Table items="{sim>/steps}" noDataText="{i18n>simNoSteps}">
+                                    <columns>
+                                        <Column width="5rem"><Text text="{i18n>colStep}" /></Column>
+                                        <Column><Text text="{i18n>colRole}" /></Column>
+                                        <Column><Text text="{i18n>colAssigned}" /></Column>
+                                        <Column><Text text="{i18n>colRule}" /></Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem>
+                                            <cells>
+                                                <Text text="{sim>stepNo}" />
+                                                <ObjectStatus text="{sim>role}" state="{ path: 'sim>role', formatter: '.roleState' }" />
+                                                <ObjectStatus text="{sim>assignedTo}" state="{sim>state}" />
+                                                <Text text="{sim>rule}" />
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+                                <MessageStrip text="{sim>/budgetText}" type="{sim>/budgetType}" showIcon="true"
+                                              visible="{= !!${sim>/budgetText} }" class="sapUiSmallMarginTop" />
+                            </VBox>
+                        </VBox>
+                    </content>
+                </Page>
+
+                <!-- ========== HEALTH CHECK ========== -->
+                <Page id="healthPage" showHeader="false">
+                    <content>
+                        <VBox class="prContent">
+                            <VBox class="prCard">
+                                <OverflowToolbar>
+                                    <Title text="{i18n>healthTitle} ({ui>/healthCount})" />
+                                    <ToolbarSpacer />
+                                    <Button text="{i18n>healthRun}" icon="sap-icon://synchronize" press=".onRunHealth" />
+                                </OverflowToolbar>
+                                <MessageStrip text="{i18n>healthOk}" type="Success" showIcon="true"
+                                              visible="{= ${health>/issues}.length === 0 }" class="sapUiSmallMarginTop" />
+                                <VBox items="{health>/issues}" class="sapUiSmallMarginTop">
+                                    <HBox alignItems="Center" class="sapUiTinyMarginBottom">
+                                        <MessageStrip text="{health>text}" type="{health>type}" showIcon="true"
+                                                      class="sapUiTinyMarginEnd">
+                                            <layoutData><FlexItemData growFactor="1" /></layoutData>
+                                        </MessageStrip>
+                                        <Button text="{i18n>show}" type="Transparent" press=".onShowIssue" />
+                                    </HBox>
+                                </VBox>
+                            </VBox>
+                        </VBox>
+                    </content>
+                </Page>
+
+                <!-- ========== COST CENTRE OBJECT PAGE ========== -->
+                <Page id="ccDetailPage" showHeader="false" enableScrolling="false">
+                    <content>
+                        <uxap:ObjectPageLayout id="ccDetailLayout" upperCaseAnchorBar="false"
+                                               headerContentPinnable="true" showTitleInHeaderContent="false">
+
+                            <uxap:headerTitle>
+                                <uxap:ObjectPageDynamicHeaderTitle>
+                                    <uxap:breadcrumbs>
+                                        <Breadcrumbs currentLocationText="{ccd>/cc/code}">
+                                            <Link text="{i18n>tabCc}" press=".onCcDetailBack" />
+                                        </Breadcrumbs>
+                                    </uxap:breadcrumbs>
+                                    <uxap:heading>
+                                        <Title text="{ccd>/cc/code} - {ccd>/cc/name}" wrapping="true" />
+                                    </uxap:heading>
+                                    <uxap:snappedContent>
+                                        <Text text="{ccd>/cc/orgUnit}" />
+                                    </uxap:snappedContent>
+                                    <uxap:actions>
+                                        <Button text="{i18n>edit}" icon="sap-icon://edit" type="Emphasized"
+                                                press=".onCcDetailEdit" />
+                                    </uxap:actions>
+                                </uxap:ObjectPageDynamicHeaderTitle>
+                            </uxap:headerTitle>
+
+                            <uxap:headerContent>
+                                <HBox wrap="Wrap" renderType="Bare">
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colBudget}" />
+                                        <ObjectNumber number="{ path: 'ccd>/cc/budgetAmount', formatter: '.fmtAmount' }"
+                                                      unit="{ccd>/cc/currency_code}" emphasized="true" />
+                                    </VBox>
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colCommitted}" />
+                                        <ObjectNumber number="{ path: 'ccd>/cc/committedAmount', formatter: '.fmtAmount' }"
+                                                      unit="{ccd>/cc/currency_code}" emphasized="false" />
+                                    </VBox>
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colAvailable}" />
+                                        <ObjectNumber number="{ path: 'ccd>/cc/availableBudget', formatter: '.fmtAmount' }"
+                                                      unit="{ccd>/cc/currency_code}" emphasized="true"
+                                                      state="{= ${ccd>/cc/availableBudget} &lt; 0 ? 'Error' : 'Success' }" />
+                                    </VBox>
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom" width="14rem">
+                                        <Label text="{i18n>colUsage}" />
+                                        <ProgressIndicator showValue="true" width="100%"
+                                            percentValue="{ parts: ['ccd>/cc/committedAmount', 'ccd>/cc/budgetAmount'], formatter: '.usage' }"
+                                            displayValue="{ parts: ['ccd>/cc/committedAmount', 'ccd>/cc/budgetAmount'], formatter: '.usageText' }"
+                                            state="{ parts: ['ccd>/cc/committedAmount', 'ccd>/cc/budgetAmount'], formatter: '.usageState' }" />
+                                    </VBox>
+                                    <VBox class="sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colActive}" />
+                                        <ObjectStatus text="{= ${ccd>/cc/active} ? ${i18n>yes} : ${i18n>no} }"
+                                                      state="{= ${ccd>/cc/active} ? 'Success' : 'Error' }" />
+                                    </VBox>
+                                </HBox>
+                            </uxap:headerContent>
+
+                            <uxap:sections>
+
+                                <!-- ===== General information ===== -->
+                                <uxap:ObjectPageSection title="{i18n>secGeneral}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <VBox>
+                                                    <MessageStrip text="{i18n>ccSamePerson}" type="Warning" showIcon="true"
+                                                                  visible="{= !!${ccd>/cc/managerId} &amp;&amp; ${ccd>/cc/managerId} === ${ccd>/cc/financeApproverId} }"
+                                                                  class="sapUiSmallMarginBottom" />
+                                                    <MessageStrip text="{i18n>ccMissingApprover}" type="Information" showIcon="true"
+                                                                  visible="{= !${ccd>/cc/managerId} || !${ccd>/cc/financeApproverId} }"
+                                                                  class="sapUiSmallMarginBottom" />
+                                                    <f:SimpleForm editable="false" layout="ColumnLayout"
+                                                                  columnsM="2" columnsL="2" columnsXL="3">
+                                                        <Label text="{i18n>colCode}" />
+                                                        <Text text="{ccd>/cc/code}" />
+                                                        <Label text="{i18n>colName}" />
+                                                        <Text text="{ccd>/cc/name}" />
+                                                        <Label text="{i18n>colOrgUnit}" />
+                                                        <Text text="{ccd>/cc/orgUnit}" />
+                                                        <Label text="{i18n>colManager}" />
+                                                        <Text text="{= ${ccd>/cc/managerId} || '-' }" />
+                                                        <Label text="{i18n>colFinance}" />
+                                                        <Text text="{= ${ccd>/cc/financeApproverId} || '-' }" />
+                                                        <Label text="{i18n>colCurrency}" />
+                                                        <Text text="{ccd>/cc/currency_code}" />
+                                                    </f:SimpleForm>
+                                                </VBox>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                                <!-- ===== Approval matrix that applies to this cost centre ===== -->
+                                <uxap:ObjectPageSection title="{i18n>secMatrix}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <Table items="{ccd>/matrix}" noDataText="{i18n>noRows}">
+                                                    <headerToolbar>
+                                                        <OverflowToolbar>
+                                                            <Text text="{ccd>/matrixHint}" />
+                                                            <ToolbarSpacer />
+                                                            <Link text="{i18n>openMatrix}" press=".onOpenMatrix" />
+                                                        </OverflowToolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column width="5rem"><Text text="{i18n>colStep}" /></Column>
+                                                        <Column><Text text="{i18n>colRole}" /></Column>
+                                                        <Column><Text text="{i18n>colCategory}" /></Column>
+                                                        <Column hAlign="End"><Text text="{i18n>colFrom}" /></Column>
+                                                        <Column hAlign="End"><Text text="{i18n>colTo}" /></Column>
+                                                        <Column width="6rem"><Text text="{i18n>colActive}" /></Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem>
+                                                            <cells>
+                                                                <Text text="{ccd>stepNo}" />
+                                                                <ObjectStatus text="{ccd>approverRole}"
+                                                                              state="{ path: 'ccd>approverRole', formatter: '.roleState' }" />
+                                                                <Text text="{= ${ccd>category_code} || ${i18n>any} }" />
+                                                                <Text text="{ path: 'ccd>minAmount', formatter: '.fmtAmount' }" />
+                                                                <Text text="{ path: 'ccd>maxAmount', formatter: '.fmtMax' }" />
+                                                                <ObjectStatus text="{= ${ccd>active} ? ${i18n>yes} : ${i18n>no} }"
+                                                                              state="{= ${ccd>active} ? 'Success' : 'None' }" />
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                                <!-- ===== Purchase categories and their approval route ===== -->
+                                <uxap:ObjectPageSection title="{i18n>secCategories}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <Table items="{ccd>/categories}" noDataText="{i18n>noRows}">
+                                                    <headerToolbar>
+                                                        <OverflowToolbar>
+                                                            <Text text="{i18n>catRouteHint}" />
+                                                            <ToolbarSpacer />
+                                                            <Link text="{i18n>openCategories}" press=".onOpenCat" />
+                                                        </OverflowToolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column width="8rem"><Text text="{i18n>colCode}" /></Column>
+                                                        <Column><Text text="{i18n>colName}" /></Column>
+                                                        <Column hAlign="End" width="9rem"><Text text="{i18n>colTaxRate}" /></Column>
+                                                        <Column width="12rem"><Text text="{i18n>colRoute}" /></Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem>
+                                                            <cells>
+                                                                <ObjectIdentifier title="{ccd>code}" />
+                                                                <Text text="{ccd>name}" />
+                                                                <Text text="{ccd>defaultTaxRate} %" />
+                                                                <ObjectStatus text="{ccd>routeText}" state="{ccd>routeState}" />
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                            </uxap:sections>
+                        </uxap:ObjectPageLayout>
+                    </content>
+                </Page>
+
+                <!-- ========== PURCHASE CATEGORY OBJECT PAGE ========== -->
+                <Page id="catDetailPage" showHeader="false" enableScrolling="false">
+                    <content>
+                        <uxap:ObjectPageLayout id="catDetailLayout" upperCaseAnchorBar="false"
+                                               headerContentPinnable="true" showTitleInHeaderContent="false">
+
+                            <uxap:headerTitle>
+                                <uxap:ObjectPageDynamicHeaderTitle>
+                                    <uxap:breadcrumbs>
+                                        <Breadcrumbs currentLocationText="{catd>/cat/code}">
+                                            <Link text="{i18n>tabCat}" press=".onCatDetailBack" />
+                                        </Breadcrumbs>
+                                    </uxap:breadcrumbs>
+                                    <uxap:heading>
+                                        <Title text="{catd>/cat/code} - {catd>/cat/name}" wrapping="true" />
+                                    </uxap:heading>
+                                    <uxap:actions>
+                                        <Button text="{i18n>edit}" icon="sap-icon://edit" type="Emphasized"
+                                                press=".onCatDetailEdit" />
+                                    </uxap:actions>
+                                </uxap:ObjectPageDynamicHeaderTitle>
+                            </uxap:headerTitle>
+
+                            <uxap:headerContent>
+                                <HBox wrap="Wrap" renderType="Bare">
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colTaxRate}" />
+                                        <ObjectNumber number="{catd>/cat/defaultTaxRate}" unit="%" emphasized="true" />
+                                    </VBox>
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>secMatrix}" />
+                                        <ObjectNumber number="{catd>/ruleCount}" emphasized="false" />
+                                    </VBox>
+                                    <VBox class="sapUiSmallMarginBottom">
+                                        <Label text="{i18n>secCcList}" />
+                                        <ObjectNumber number="{catd>/ccCount}" emphasized="false" />
+                                    </VBox>
+                                </HBox>
+                            </uxap:headerContent>
+
+                            <uxap:sections>
+
+                                <uxap:ObjectPageSection title="{i18n>secGeneral}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <f:SimpleForm editable="false" layout="ColumnLayout"
+                                                              columnsM="2" columnsL="2" columnsXL="3">
+                                                    <Label text="{i18n>colCode}" />
+                                                    <Text text="{catd>/cat/code}" />
+                                                    <Label text="{i18n>colName}" />
+                                                    <Text text="{catd>/cat/name}" />
+                                                    <Label text="{i18n>colTaxRate}" />
+                                                    <Text text="{catd>/cat/defaultTaxRate} %" />
+                                                </f:SimpleForm>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                                <uxap:ObjectPageSection title="{i18n>secMatrix}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <Table items="{catd>/rules}" noDataText="{i18n>noRows}">
+                                                    <headerToolbar>
+                                                        <OverflowToolbar>
+                                                            <Text text="{catd>/rulesHint}" />
+                                                            <ToolbarSpacer />
+                                                            <Link text="{i18n>openMatrix}" press=".onOpenMatrix" />
+                                                        </OverflowToolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column width="5rem"><Text text="{i18n>colStep}" /></Column>
+                                                        <Column><Text text="{i18n>colRole}" /></Column>
+                                                        <Column><Text text="{i18n>colOrgUnit}" /></Column>
+                                                        <Column><Text text="{i18n>colCurrency}" /></Column>
+                                                        <Column hAlign="End"><Text text="{i18n>colFrom}" /></Column>
+                                                        <Column hAlign="End"><Text text="{i18n>colTo}" /></Column>
+                                                        <Column width="6rem"><Text text="{i18n>colActive}" /></Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem>
+                                                            <cells>
+                                                                <Text text="{catd>stepNo}" />
+                                                                <ObjectStatus text="{catd>approverRole}"
+                                                                              state="{ path: 'catd>approverRole', formatter: '.roleState' }" />
+                                                                <Text text="{= ${catd>orgUnit} || ${i18n>any} }" />
+                                                                <Text text="{= ${catd>currency_code} || ${i18n>any} }" />
+                                                                <Text text="{ path: 'catd>minAmount', formatter: '.fmtAmount' }" />
+                                                                <Text text="{ path: 'catd>maxAmount', formatter: '.fmtMax' }" />
+                                                                <ObjectStatus text="{= ${catd>active} ? ${i18n>yes} : ${i18n>no} }"
+                                                                              state="{= ${catd>active} ? 'Success' : 'None' }" />
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                                <uxap:ObjectPageSection title="{i18n>secCcList}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <Table items="{catd>/ccs}" noDataText="{i18n>noRows}">
+                                                    <headerToolbar>
+                                                        <OverflowToolbar>
+                                                            <Text text="{i18n>ccRouteHint}" />
+                                                            <ToolbarSpacer />
+                                                            <Link text="{i18n>openCostCentres}" press=".onOpenCc" />
+                                                        </OverflowToolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column width="8rem"><Text text="{i18n>colCode}" /></Column>
+                                                        <Column><Text text="{i18n>colName}" /></Column>
+                                                        <Column><Text text="{i18n>colOrgUnit}" /></Column>
+                                                        <Column width="6rem"><Text text="{i18n>colActive}" /></Column>
+                                                        <Column width="12rem"><Text text="{i18n>colRoute}" /></Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem>
+                                                            <cells>
+                                                                <ObjectIdentifier title="{catd>code}" />
+                                                                <Text text="{catd>name}" />
+                                                                <Text text="{catd>orgUnit}" />
+                                                                <ObjectStatus text="{catd>activeText}" state="{catd>activeState}" />
+                                                                <ObjectStatus text="{catd>routeText}" state="{catd>routeState}" />
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                            </uxap:sections>
+                        </uxap:ObjectPageLayout>
+                    </content>
+                </Page>
+
+                <!-- ========== MATERIAL OBJECT PAGE ========== -->
+                <Page id="matDetailPage" showHeader="false" enableScrolling="false">
+                    <content>
+                        <uxap:ObjectPageLayout id="matDetailLayout" upperCaseAnchorBar="false"
+                                               headerContentPinnable="true" showTitleInHeaderContent="false">
+
+                            <uxap:headerTitle>
+                                <uxap:ObjectPageDynamicHeaderTitle>
+                                    <uxap:breadcrumbs>
+                                        <Breadcrumbs currentLocationText="{matd>/mat/code}">
+                                            <Link text="{i18n>tabMat}" press=".onMatDetailBack" />
+                                        </Breadcrumbs>
+                                    </uxap:breadcrumbs>
+                                    <uxap:heading>
+                                        <Title text="{matd>/mat/code} - {matd>/mat/description}" wrapping="true" />
+                                    </uxap:heading>
+                                    <uxap:snappedContent>
+                                        <Text text="{matd>/mat/uom}" />
+                                    </uxap:snappedContent>
+                                    <uxap:actions>
+                                        <Button text="{i18n>edit}" icon="sap-icon://edit" type="Emphasized"
+                                                press=".onMatDetailEdit" />
+                                    </uxap:actions>
+                                </uxap:ObjectPageDynamicHeaderTitle>
+                            </uxap:headerTitle>
+
+                            <uxap:headerContent>
+                                <HBox wrap="Wrap" renderType="Bare">
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colUnitPrice}" />
+                                        <ObjectNumber number="{ path: 'matd>/mat/unitPrice', formatter: '.fmtAmount' }"
+                                                      emphasized="true" />
+                                    </VBox>
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colUom}" />
+                                        <ObjectStatus text="{matd>/mat/uom}" />
+                                    </VBox>
+                                    <VBox class="sapUiSmallMarginBottom" visible="{matd>/usageKnown}">
+                                        <Label text="{i18n>matUsedOn}" />
+                                        <ObjectStatus text="{matd>/usageCount}"
+                                                      state="{= ${matd>/usageCount} > 0 ? 'Information' : 'None' }" />
+                                    </VBox>
+                                </HBox>
+                            </uxap:headerContent>
+
+                            <uxap:sections>
+
+                                <!-- ===== General information ===== -->
+                                <uxap:ObjectPageSection title="{i18n>secGeneral}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <f:SimpleForm editable="false" layout="ColumnLayout"
+                                                              columnsM="2" columnsL="2" columnsXL="3">
+                                                    <Label text="{i18n>colCode}" />
+                                                    <Text text="{matd>/mat/code}" />
+                                                    <Label text="{i18n>colDescription}" />
+                                                    <Text text="{matd>/mat/description}" />
+                                                    <Label text="{i18n>colUom}" />
+                                                    <Text text="{matd>/mat/uom}" />
+                                                    <Label text="{i18n>colUnitPrice}" />
+                                                    <Text text="{ path: 'matd>/mat/unitPrice', formatter: '.fmtAmount' }" />
+                                                </f:SimpleForm>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                                <!-- ===== Usage on requisitions ===== -->
+                                <uxap:ObjectPageSection title="{i18n>secMatUsage}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <VBox>
+                                                    <MessageStrip text="{matd>/usageText}" showIcon="true"
+                                                                  type="{= ${matd>/usageCount} > 0 ? 'Information' : 'Success' }"
+                                                                  visible="{matd>/usageKnown}" />
+                                                    <MessageStrip text="{i18n>matUsageUnknown}" type="Warning" showIcon="true"
+                                                                  visible="{= !${matd>/usageKnown} }" />
+                                                </VBox>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                            </uxap:sections>
+                        </uxap:ObjectPageLayout>
+                    </content>
+                </Page>
+
+                <!-- ========== APPROVAL MATRIX OBJECT PAGE ========== -->
+                <Page id="mxDetailPage" showHeader="false" enableScrolling="false">
+                    <content>
+                        <uxap:ObjectPageLayout id="mxDetailLayout" upperCaseAnchorBar="false"
+                                               headerContentPinnable="true" showTitleInHeaderContent="false">
+
+                            <uxap:headerTitle>
+                                <uxap:ObjectPageDynamicHeaderTitle>
+                                    <uxap:breadcrumbs>
+                                        <Breadcrumbs currentLocationText="{mxd>/title}">
+                                            <Link text="{i18n>tabMatrix}" press=".onMxDetailBack" />
+                                        </Breadcrumbs>
+                                    </uxap:breadcrumbs>
+                                    <uxap:heading>
+                                        <Title text="{mxd>/title}" wrapping="true" />
+                                    </uxap:heading>
+                                    <uxap:actions>
+                                        <Button text="{i18n>edit}" icon="sap-icon://edit" type="Emphasized"
+                                                press=".onMxDetailEdit" />
+                                    </uxap:actions>
+                                </uxap:ObjectPageDynamicHeaderTitle>
+                            </uxap:headerTitle>
+
+                            <uxap:headerContent>
+                                <HBox wrap="Wrap" renderType="Bare">
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colFrom}" />
+                                        <ObjectNumber number="{ path: 'mxd>/mx/minAmount', formatter: '.fmtAmount' }"
+                                                      unit="{mxd>/mx/currency_code}" emphasized="true" />
+                                    </VBox>
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colTo}" />
+                                        <ObjectNumber number="{ path: 'mxd>/mx/maxAmount', formatter: '.fmtMax' }"
+                                                      unit="{mxd>/mx/currency_code}" emphasized="true" />
+                                    </VBox>
+                                    <VBox class="sapUiMediumMarginEnd sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colRole}" />
+                                        <ObjectStatus text="{mxd>/mx/approverRole}"
+                                                      state="{ path: 'mxd>/mx/approverRole', formatter: '.roleState' }" />
+                                    </VBox>
+                                    <VBox class="sapUiSmallMarginBottom">
+                                        <Label text="{i18n>colActive}" />
+                                        <ObjectStatus text="{= ${mxd>/mx/active} ? ${i18n>yes} : ${i18n>no} }"
+                                                      state="{= ${mxd>/mx/active} ? 'Success' : 'Error' }" />
+                                    </VBox>
+                                </HBox>
+                            </uxap:headerContent>
+
+                            <uxap:sections>
+
+                                <uxap:ObjectPageSection title="{i18n>secGeneral}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <VBox>
+                                                    <MessageStrip text="{mxd>/overlapText}" type="Warning" showIcon="true"
+                                                                  visible="{= ${mxd>/overlap} > 0 }"
+                                                                  class="sapUiSmallMarginBottom" />
+                                                    <f:SimpleForm editable="false" layout="ColumnLayout"
+                                                                  columnsM="2" columnsL="2" columnsXL="3">
+                                                        <Label text="{i18n>colStep}" />
+                                                        <Text text="{mxd>/mx/stepNo}" />
+                                                        <Label text="{i18n>colRole}" />
+                                                        <Text text="{mxd>/mx/approverRole}" />
+                                                        <Label text="{i18n>colOrgUnit}" />
+                                                        <Text text="{= ${mxd>/mx/orgUnit} || ${i18n>any} }" />
+                                                        <Label text="{i18n>colCategory}" />
+                                                        <Text text="{= ${mxd>/mx/category_code} || ${i18n>any} }" />
+                                                        <Label text="{i18n>colCurrency}" />
+                                                        <Text text="{= ${mxd>/mx/currency_code} || ${i18n>any} }" />
+                                                    </f:SimpleForm>
+                                                </VBox>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                                <uxap:ObjectPageSection title="{i18n>secAffectedCc}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <Table items="{mxd>/ccs}" noDataText="{i18n>noRows}">
+                                                    <headerToolbar>
+                                                        <OverflowToolbar>
+                                                            <Text text="{i18n>mxRuleHint}" />
+                                                            <ToolbarSpacer />
+                                                            <Link text="{i18n>openCostCentres}" press=".onOpenCc" />
+                                                        </OverflowToolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column width="8rem"><Text text="{i18n>colCode}" /></Column>
+                                                        <Column><Text text="{i18n>colName}" /></Column>
+                                                        <Column><Text text="{i18n>colOrgUnit}" /></Column>
+                                                        <Column width="6rem"><Text text="{i18n>colCurrency}" /></Column>
+                                                        <Column><Text text="{i18n>colAssigned}" /></Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem>
+                                                            <cells>
+                                                                <ObjectIdentifier title="{mxd>code}" />
+                                                                <Text text="{mxd>name}" />
+                                                                <Text text="{mxd>orgUnit}" />
+                                                                <Text text="{mxd>currency_code}" />
+                                                                <ObjectStatus text="{mxd>assignedTo}" state="{mxd>state}" />
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                                <uxap:ObjectPageSection title="{i18n>secAffectedCat}" titleUppercase="false">
+                                    <uxap:subSections>
+                                        <uxap:ObjectPageSubSection titleUppercase="false">
+                                            <uxap:blocks>
+                                                <Table items="{mxd>/cats}" noDataText="{i18n>noRows}">
+                                                    <headerToolbar>
+                                                        <OverflowToolbar>
+                                                            <ToolbarSpacer />
+                                                            <Link text="{i18n>openCategories}" press=".onOpenCat" />
+                                                        </OverflowToolbar>
+                                                    </headerToolbar>
+                                                    <columns>
+                                                        <Column width="8rem"><Text text="{i18n>colCode}" /></Column>
+                                                        <Column><Text text="{i18n>colName}" /></Column>
+                                                        <Column hAlign="End" width="9rem"><Text text="{i18n>colTaxRate}" /></Column>
+                                                    </columns>
+                                                    <items>
+                                                        <ColumnListItem>
+                                                            <cells>
+                                                                <ObjectIdentifier title="{mxd>code}" />
+                                                                <Text text="{mxd>name}" />
+                                                                <Text text="{mxd>defaultTaxRate} %" />
+                                                            </cells>
+                                                        </ColumnListItem>
+                                                    </items>
+                                                </Table>
+                                            </uxap:blocks>
+                                        </uxap:ObjectPageSubSection>
+                                    </uxap:subSections>
+                                </uxap:ObjectPageSection>
+
+                            </uxap:sections>
+                        </uxap:ObjectPageLayout>
+                    </content>
+                </Page>
+
+            </NavContainer>
+        </tnt:mainContents>
+
+        <!-- ================= DIALOGS ================= -->
+        <tnt:dependents>
+
+            <!-- ===== Approval matrix dialog ===== -->
+            <Dialog id="matrixDialog" title="{mx>/title}" contentWidth="36rem" resizable="true">
+                <content>
+                    <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="1" columnsL="1" columnsXL="1">
+                        <Label text="{i18n>fStep}" required="true" />
+                        <Input value="{mx>/stepNo}" type="Number" />
+
+                        <Label text="{i18n>fRole}" required="true" />
+                        <Select selectedKey="{mx>/approverRole}">
+                            <core:Item key="Manager" text="{i18n>roleManager}" />
+                            <core:Item key="Finance" text="{i18n>roleFinance}" />
+                        </Select>
+
+                        <Label text="{i18n>fFrom}" required="true" />
+                        <Input value="{mx>/minAmount}" type="Number" />
+
+                        <Label text="{i18n>fTo}" />
+                        <Input value="{mx>/maxAmount}" type="Number" placeholder="{i18n>noLimit}" />
+
+                        <Label text="{i18n>fOrgUnit}" />
+                        <Input value="{mx>/orgUnit}" maxLength="20" showSuggestion="true"
+                               placeholder="{i18n>anyHint}" suggestionItems="{data>/orgUnits}">
+                            <suggestionItems>
+                                <core:Item key="{data>value}" text="{data>value}" />
+                            </suggestionItems>
+                        </Input>
+
+                        <Label text="{i18n>fCategory}" />
+                        <Select selectedKey="{mx>/category_code}" items="{data>/catOptions}">
+                            <core:Item key="{data>code}" text="{data>label}" />
+                        </Select>
+
+                        <Label text="{i18n>fCurrency}" />
+                        <Input value="{mx>/currency_code}" maxLength="3" showSuggestion="true"
+                               placeholder="{i18n>anyHint}" suggestionItems="{data>/currencies}">
+                            <suggestionItems>
+                                <core:Item key="{data>code}" text="{data>code}" />
+                            </suggestionItems>
+                        </Input>
+
+                        <Label text="{i18n>fActive}" />
+                        <Switch state="{mx>/active}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" />
+                    </f:SimpleForm>
+                    <MessageStrip text="{i18n>mxNote}" type="Information" showIcon="true"
+                                  class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom" />
+                </content>
+                <beginButton><Button text="{i18n>save}" type="Emphasized" press=".onSaveMatrix" /></beginButton>
+                <endButton><Button text="{i18n>cancel}" press=".onCloseMatrix" /></endButton>
+            </Dialog>
+
+            <!-- ===== Cost centre dialog ===== -->
+            <Dialog id="ccDialog" title="{cc>/title}" contentWidth="36rem" resizable="true">
+                <content>
+                    <MessageStrip text="{i18n>ccIntro}" type="Information" showIcon="true"
+                                  class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+
+                    <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="1" columnsL="1" columnsXL="1">
+                        <Label text="{i18n>colCode}" />
+                        <Text text="{= ${cc>/mode} === 'create' ? ${i18n>codeGenerated} : ${cc>/code} }" />
+
+                        <Label text="{i18n>colName}" required="true" />
+                        <Input value="{cc>/name}" maxLength="100" placeholder="{i18n>phCcName}"
+                               tooltip="{i18n>phCcName}" />
+
+                        <Label text="{i18n>colOrgUnit}" required="true" />
+                        <Input value="{cc>/orgUnit}" maxLength="20" showSuggestion="true"
+                               placeholder="{i18n>phCcOrgUnit}" suggestionItems="{data>/orgUnits}">
+                            <suggestionItems>
+                                <core:Item key="{data>value}" text="{data>value}" />
+                            </suggestionItems>
+                        </Input>
+
+                        <Label text="{i18n>colManager}" />
+                        <Input value="{cc>/managerId}" maxLength="100" placeholder="{i18n>phCcManager}" />
+
+                        <Label text="{i18n>colFinance}" />
+                        <Input value="{cc>/financeApproverId}" maxLength="100" placeholder="{i18n>phCcFinance}" />
+
+                        <Label text="{i18n>colCurrency}" required="true" />
+                        <ComboBox selectedKey="{cc>/currency_code}" showSecondaryValues="true"
+                                  placeholder="{i18n>phCcCurrency}" width="100%"
+                                  items="{ path: 'data>/currencies', sorter: { path: 'code' } }">
+                            <core:ListItem key="{data>code}" text="{data>code}" additionalText="{data>name}" />
+                        </ComboBox>
+
+                        <Label text="{i18n>colBudget}" required="true" />
+                        <StepInput value="{cc>/budgetAmount}" min="0" step="10000" largerStep="100000"
+                                   displayValuePrecision="0" description="{cc>/currency_code}"
+                                   width="100%" tooltip="{i18n>ccBudgetHint}" />
+                        <Text text="{i18n>ccBudgetHint}" class="admSubtitle" />
+
+                        <Label text="{i18n>colCommitted}" visible="{= ${cc>/mode} === 'edit' }" />
+                        <Text text="{ path: 'cc>/committedAmount', formatter: '.fmtAmount' }"
+                              visible="{= ${cc>/mode} === 'edit' }" />
+
+                        <Label text="{i18n>colActive}" />
+                        <Switch state="{cc>/active}" customTextOn="{i18n>yes}" customTextOff="{i18n>no}" />
+                    </f:SimpleForm>
+
+                    <MessageStrip text="{i18n>ccSamePerson}" type="Warning" showIcon="true"
+                                  visible="{= !!${cc>/managerId} &amp;&amp; ${cc>/managerId} === ${cc>/financeApproverId} }"
+                                  class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom" />
+                    <MessageStrip text="{i18n>ccMissingApprover}" type="Information" showIcon="true"
+                                  visible="{= !${cc>/managerId} || !${cc>/financeApproverId} }"
+                                  class="sapUiSmallMarginBeginEnd sapUiSmallMarginBottom" />
+                </content>
+                <beginButton><Button text="{i18n>save}" type="Emphasized" press=".onSaveCc" /></beginButton>
+                <endButton><Button text="{i18n>cancel}" press=".onCloseCc" /></endButton>
+            </Dialog>
+
+            <!-- ===== Category dialog: code and name dropdowns from the cost centre table ===== -->
+            <Dialog id="catDialog" title="{cat>/title}" contentWidth="30rem" resizable="true">
+                <content>
+                    <MessageStrip text="{i18n>catIntro}" type="Information" showIcon="true"
+                                  class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+                    <MessageStrip text="{i18n>catExistsNote}" type="Warning" showIcon="true"
+                                  visible="{= ${cat>/exists} === true }"
+                                  class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+
+                    <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="1" columnsL="1" columnsXL="1">
+
+                        <Label text="{i18n>colCode}" required="true" />
+                        <ComboBox value="{cat>/code}" maxLength="10" width="100%" showSecondaryValues="true"
+                                  placeholder="{i18n>phCatCode}" tooltip="{i18n>phCatCode}"
+                                  editable="{= ${cat>/mode} === 'create' }"
+                                  selectionChange=".onCatPick"
+                                  items="{ path: 'data>/costCentres', sorter: { path: 'code' } }">
+                            <core:ListItem key="{data>code}" text="{data>code}" additionalText="{data>name}" />
+                        </ComboBox>
+
+                        <Label text="{i18n>colName}" required="true" />
+                        <ComboBox value="{cat>/name}" maxLength="100" width="100%" showSecondaryValues="true"
+                                  visible="{= ${cat>/mode} === 'create' }"
+                                  placeholder="{i18n>phCatName}" tooltip="{i18n>phCatName}"
+                                  selectionChange=".onCatPick"
+                                  items="{ path: 'data>/costCentres', sorter: { path: 'name' } }">
+                            <core:ListItem key="{data>code}" text="{data>name}" additionalText="{data>code}" />
+                        </ComboBox>
+                        <Input value="{cat>/name}" maxLength="100"
+                               visible="{= ${cat>/mode} !== 'create' }" />
+
+                        <Label text="{i18n>colTaxRate}" required="true" />
+                        <StepInput value="{cat>/defaultTaxRate}" min="0" max="100" step="1" largerStep="5"
+                                   displayValuePrecision="2" description="%" width="100%"
+                                   tooltip="{i18n>phCatTax}" />
+                        <Text text="{i18n>phCatTax}" class="admSubtitle" />
+                    </f:SimpleForm>
+                </content>
+                <beginButton><Button text="{i18n>save}" type="Emphasized" press=".onSaveCat" /></beginButton>
+                <endButton><Button text="{i18n>cancel}" press=".onCloseCat" /></endButton>
+            </Dialog>
+
+            <!-- ===== Material dialog ===== -->
+            <Dialog id="matDialog" title="{mat>/title}" contentWidth="30rem" resizable="true">
+                <content>
+                    <MessageStrip text="{i18n>matIntro}" type="Information" showIcon="true"
+                                  class="sapUiSmallMarginBeginEnd sapUiSmallMarginTop" />
+
+                    <f:SimpleForm editable="true" layout="ColumnLayout" columnsM="1" columnsL="1" columnsXL="1">
+                        <Label text="{i18n>colCode}" required="true" />
+                        <Input value="{mat>/code}" maxLength="20"
+                               placeholder="{i18n>phMatCode}" tooltip="{i18n>phMatCode}"
+                               editable="{= ${mat>/mode} === 'create' }" />
+                        <Text text="{i18n>hintMatCode}" class="admSubtitle"
+                              visible="{= ${mat>/mode} === 'create' }" />
+
+                        <Label text="{i18n>colDescription}" required="true" />
+                        <Input value="{mat>/description}" maxLength="200"
+                               placeholder="{i18n>phMatDescription}" tooltip="{i18n>phMatDescription}" />
+
+                        <Label text="{i18n>colUom}" required="true" />
+                        <Input value="{mat>/uom}" maxLength="10"
+                               placeholder="{i18n>phMatUom}" tooltip="{i18n>phMatUom}" />
+                        <Text text="{i18n>hintMatUom}" class="admSubtitle" />
+
+                        <Label text="{i18n>colUnitPrice}" required="true" />
+                        <StepInput value="{mat>/unitPrice}" min="0" step="100" largerStep="1000"
+                                   displayValuePrecision="2" width="100%"
+                                   tooltip="{i18n>hintMatPrice}" />
+                        <Text text="{i18n>hintMatPrice}" class="admSubtitle" />
+                    </f:SimpleForm>
+                </content>
+                <beginButton><Button text="{i18n>save}" type="Emphasized" press=".onSaveMat" /></beginButton>
+                <endButton><Button text="{i18n>cancel}" press=".onCloseMat" /></endButton>
+            </Dialog>
+
+        </tnt:dependents>
+    </tnt:ToolPage>
+</mvc:View>
