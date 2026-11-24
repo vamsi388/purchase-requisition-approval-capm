@@ -1,0 +1,456 @@
+<mvc:View controllerName="procurement.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:tnt="sap.tnt"
+    displayBlock="true" height="100%">
+
+    <tnt:ToolPage id="toolPage" sideExpanded="{ui>/sideExpanded}"
+                  busy="{ui>/busy}" busyIndicatorDelay="0">
+
+        <!-- ================= HEADER ================= -->
+        <tnt:header>
+            <tnt:ToolHeader>
+                <Button icon="sap-icon://menu2" type="Transparent" tooltip="{i18n>toggleMenu}"
+                        press=".onToggleSide">
+                    <layoutData><OverflowToolbarLayoutData priority="NeverOverflow" /></layoutData>
+                </Button>
+                <Title text="{i18n>appHeader}" wrapping="false">
+                    <layoutData><OverflowToolbarLayoutData priority="Disappear" /></layoutData>
+                </Title>
+                <ToolbarSpacer />
+                <Button icon="sap-icon://refresh" type="Transparent" tooltip="{i18n>refresh}"
+                        press=".onRefreshAll" />
+                <Button icon="sap-icon://discussion" type="Transparent" tooltip="{i18n>aiTitle}"
+                        press=".onToggleChat" />
+                <Button icon="sap-icon://bell" type="Transparent" tooltip="{i18n>alertsTitle}"
+                        press=".onShowAlerts">
+                    <customData>
+                        <BadgeCustomData key="badge" value="{ui>/alertBadge}" />
+                    </customData>
+                </Button>
+            </tnt:ToolHeader>
+        </tnt:header>
+
+        <!-- ================= SIDE NAVIGATION ================= -->
+        <tnt:sideContent>
+            <tnt:SideNavigation id="sideNav" selectedKey="{ui>/page}" itemSelect=".onNavSelect">
+                <tnt:NavigationList>
+                    <tnt:NavigationListItem key="dashboard" text="{i18n>navDashboard}" icon="sap-icon://home" />
+                    <tnt:NavigationListItem key="queue" text="{i18n>navQueue}" icon="sap-icon://shipping-status" />
+                    <tnt:NavigationListItem key="failed" text="{i18n>navFailed}" icon="sap-icon://error" />
+                    <tnt:NavigationListItem key="published" text="{i18n>navPublished}" icon="sap-icon://sales-order" />
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+
+        <!-- ================= MAIN CONTENT ================= -->
+        <tnt:mainContents>
+
+            <NavContainer id="nav" initialPage="dashboardPage">
+
+                <!-- ========== PAGE 1: DASHBOARD ========== -->
+                <Page id="dashboardPage" showHeader="false">
+                    <content>
+
+                        <!-- ===== welcome banner with the overview tiles ===== -->
+                        <VBox class="prHero">
+                            <HBox justifyContent="SpaceBetween" alignItems="Start" wrap="Wrap">
+                                <VBox>
+                                    <Title text="{ui>/greeting}" level="H1" titleStyle="H1" class="prHeroTitle" />
+                                    <Text text="{i18n>heroSub}" class="prHeroSub" />
+                                </VBox>
+                                <ObjectStatus text="{ui>/today}" icon="sap-icon://calendar" class="prHeroMeta" />
+                            </HBox>
+
+                            <VBox class="prOverview">
+                                <HBox justifyContent="SpaceBetween" alignItems="Center" class="prOverviewHead">
+                                    <Title text="{i18n>secOverview}" level="H2" titleStyle="H2" class="prOverviewTitle" />
+                                    <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press=".onRefreshAll" />
+                                </HBox>
+
+                                <HBox renderType="Bare" class="prKpiRow">
+
+                                    <GenericTile class="prKpiGreen" width="100%"
+                                                 header="{i18n>tileReady}" subheader="{i18n>tileReadyHint}"
+                                                 tooltip="{i18n>tileReady}" press=".onTilePress">
+                                        <customData><core:CustomData key="filter" value="Approved" /></customData>
+                                        <TileContent>
+                                            <NumericContent value="{dash>/ready}" icon="sap-icon://shipping-status"
+                                                            withMargin="false" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                    <GenericTile class="prKpiRed" width="100%"
+                                                 header="{i18n>tileFailed}" subheader="{i18n>tileFailedHint}"
+                                                 tooltip="{i18n>tileFailed}" press=".onTilePress">
+                                        <customData><core:CustomData key="filter" value="Failed" /></customData>
+                                        <TileContent>
+                                            <NumericContent value="{dash>/failed}" icon="sap-icon://error"
+                                                            withMargin="false"
+                                                            valueColor="{= ${dash>/failed} > 0 ? 'Error' : 'Neutral' }" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                    <GenericTile class="prKpiPurple" width="100%"
+                                                 header="{i18n>tilePublished}" subheader="{i18n>tilePublishedHint}"
+                                                 tooltip="{i18n>tilePublished}" press=".onTilePress">
+                                        <customData><core:CustomData key="filter" value="Published" /></customData>
+                                        <TileContent>
+                                            <NumericContent value="{dash>/published}" icon="sap-icon://sales-order"
+                                                            withMargin="false" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                    <GenericTile class="prKpiBlue" width="100%"
+                                                 header="{i18n>tileAll}" subheader="{i18n>tileAllHint}"
+                                                 tooltip="{i18n>tileAll}" press=".onTilePress">
+                                        <customData><core:CustomData key="filter" value="All" /></customData>
+                                        <TileContent>
+                                            <NumericContent value="{dash>/total}" icon="sap-icon://list"
+                                                            withMargin="false" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                    <GenericTile class="prKpiOrange" width="100%"
+                                                 header="{i18n>tileAlerts}" subheader="{i18n>tileAlertsHint}"
+                                                 tooltip="{i18n>tileAlerts}" press=".onTilePress">
+                                        <customData><core:CustomData key="filter" value="{dash>/alertFilter}" /></customData>
+                                        <TileContent>
+                                            <NumericContent value="{dash>/alertCount}" icon="sap-icon://bell"
+                                                            withMargin="false"
+                                                            valueColor="{= ${dash>/alertCount} > 0 ? 'Error' : 'Good' }" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                    <GenericTile class="prKpiTeal" width="100%"
+                                                 header="{i18n>tileValue}" subheader="{i18n>tileValueHint}"
+                                                 tooltip="{i18n>tileValue}" press=".onTilePress">
+                                        <customData><core:CustomData key="filter" value="Approved" /></customData>
+                                        <TileContent footer="{dash>/valueFoot}">
+                                            <NumericContent value="{dash>/valueNum}" scale="{dash>/valueScale}"
+                                                            icon="sap-icon://money-bills"
+                                                            withMargin="false" valueColor="Neutral" />
+                                        </TileContent>
+                                    </GenericTile>
+
+                                </HBox>
+                            </VBox>
+                        </VBox>
+
+                        <VBox class="prContent">
+                            <MessageStrip text="{i18n>errNoRole}" type="Error" showIcon="true"
+                                          visible="{ui>/forbidden}" class="sapUiSmallMarginBottom" />
+
+                            <!-- ===== QUICK ACTIONS ===== -->
+                            <l:Grid defaultSpan="XL12 L12 M12 S12" hSpacing="1" vSpacing="1" class="sapUiSmallMarginBottom">
+                                <Panel headerText="{i18n>secQuick}" expandable="true" expanded="true"
+                                       class="prQuickPanel">
+                                    <List class="prQuickList" showSeparators="None" backgroundDesign="Transparent">
+                                        <CustomListItem type="Active" press=".onOpenReady" class="prQaGreen">
+                                            <HBox alignItems="Center" class="prQuickCard">
+                                                <core:Icon src="sap-icon://paper-plane" class="prQuickIcon" />
+                                                <VBox class="prQuickBody">
+                                                    <Text text="{i18n>qaReadyTag}" class="prTag" />
+                                                    <Title text="{i18n>qaReadyTitle}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qaReadyDesc}" class="prQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                        <CustomListItem type="Active" press=".onOpenFailed" class="prQaRed">
+                                            <HBox alignItems="Center" class="prQuickCard">
+                                                <core:Icon src="sap-icon://synchronize" class="prQuickIcon" />
+                                                <VBox class="prQuickBody">
+                                                    <Text text="{i18n>qaFailedTag}" class="prTag" />
+                                                    <Title text="{i18n>qaFailedTitle}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qaFailedDesc}" class="prQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                        <CustomListItem type="Active" press=".onOpenPublished" class="prQaPurple">
+                                            <HBox alignItems="Center" class="prQuickCard">
+                                                <core:Icon src="sap-icon://sales-order" class="prQuickIcon" />
+                                                <VBox class="prQuickBody">
+                                                    <Text text="{i18n>qaPubTag}" class="prTag" />
+                                                    <Title text="{i18n>qaPubTitle}" level="H5" titleStyle="H5" />
+                                                    <Text text="{i18n>qaPubDesc}" class="prQuickDesc" />
+                                                </VBox>
+                                            </HBox>
+                                        </CustomListItem>
+                                    </List>
+                                </Panel>
+                            </l:Grid>
+
+                                                       <!-- ===== CHARTS ===== -->
+                            <l:Grid defaultSpan="XL6 L6 M12 S12" hSpacing="1" vSpacing="1" class="sapUiSmallMarginBottom">
+                                <Panel>
+                                    <headerToolbar>
+                                        <OverflowToolbar><Title text="{i18n>chStatusTitle}" /></OverflowToolbar>
+                                    </headerToolbar>
+                                    <core:HTML id="chartStatus" preferDOM="false" content="&lt;div&gt;&lt;/div&gt;" />
+                                </Panel>
+                                <Panel>
+                                    <headerToolbar>
+                                        <OverflowToolbar><Title text="{i18n>chMonthsTitle}" /></OverflowToolbar>
+                                    </headerToolbar>
+                                    <core:HTML id="chartMonths" preferDOM="false" content="&lt;div&gt;&lt;/div&gt;" />
+                                </Panel>
+                            </l:Grid>
+                        </VBox>
+                    </content>
+
+                    <!-- Dialogs live here: a page is created at start, so the dialogs always exist -->
+                    <dependents>
+
+                        <!-- Details dialog -->
+                        <Dialog id="detailDialog" title="{reqNumber} - {title}" contentWidth="64rem"
+                                resizable="true" draggable="true">
+                            <content>
+                                <IconTabBar expandable="false" class="sapUiResponsiveContentPadding">
+                                    <items>
+
+                                        <IconTabFilter key="overview" icon="sap-icon://hint" text="{i18n>tabOverview}">
+                                            <f:SimpleForm editable="false" layout="ColumnLayout" columnsM="2" columnsL="2">
+                                                <Label text="{i18n>colStatus}" />
+                                                <ObjectStatus text="{status}" state="{ path: 'status', formatter: '.formatState' }" />
+                                                <Label text="{i18n>colRequester}" />
+                                                <Text text="{requester}" />
+                                                <Label text="{i18n>fJustification}" />
+                                                <Text text="{justification}" />
+                                                <Label text="{i18n>colCostCentre}" />
+                                                <Text text="{costCentre_code}" />
+                                                <Label text="{i18n>colCategory}" />
+                                                <Text text="{category_code}" />
+                                                <Label text="{i18n>fProjectRef}" />
+                                                <Text text="{projectRef}" />
+                                                <Label text="{i18n>fDelivery}" />
+                                                <Text text="{deliveryLocation}" />
+                                                <Label text="{i18n>tNet}" />
+                                                <Text text="{ path: 'netAmount', type: 'sap.ui.model.odata.type.Decimal', constraints: { precision: 15, scale: 2 } } {currency_code}" />
+                                                <Label text="{i18n>tTax}" />
+                                                <Text text="{ path: 'taxAmount', type: 'sap.ui.model.odata.type.Decimal', constraints: { precision: 15, scale: 2 } } {currency_code}" />
+                                                <Label text="{i18n>tTotal}" />
+                                                <ObjectNumber emphasized="true"
+                                                    number="{ path: 'totalAmount', type: 'sap.ui.model.odata.type.Decimal', constraints: { precision: 15, scale: 2 } }"
+                                                    unit="{currency_code}" />
+                                            </f:SimpleForm>
+                                        </IconTabFilter>
+
+                                        <IconTabFilter key="erp" icon="sap-icon://shipping-status" text="{i18n>tabErp}">
+                                            <MessageStrip type="Error" showIcon="true"
+                                                          visible="{= ${status} === 'Failed' }"
+                                                          text="{i18n>failedStrip}" class="sapUiSmallMarginBottom" />
+                                            <f:SimpleForm editable="false" layout="ColumnLayout" columnsM="2" columnsL="2">
+                                                <Label text="{i18n>fPoNumber}" />
+                                                <Text text="{erpReference/poNumber}" />
+                                                <Label text="{i18n>fPubStatus}" />
+                                                <ObjectStatus text="{erpReference/publicationStatus}"
+                                                              state="{ path: 'erpReference/publicationStatus', formatter: '.formatState' }" />
+                                                <Label text="{i18n>fAttempts}" />
+                                                <Text text="{erpReference/attempts}" />
+                                                <Label text="{i18n>fLastAttempt}" />
+                                                <Text text="{ path: 'erpReference/lastAttemptAt', type: 'sap.ui.model.odata.type.DateTimeOffset', constraints: { precision: 7 } }" />
+                                                <Label text="{i18n>fPublishedAt}" />
+                                                <Text text="{ path: 'erpReference/publishedAt', type: 'sap.ui.model.odata.type.DateTimeOffset', constraints: { precision: 7 } }" />
+                                                <Label text="{i18n>fKey}" />
+                                                <Text text="{erpReference/idempotencyKey}" />
+                                                <Label text="{i18n>fLastError}" />
+                                                <Text text="{erpReference/lastError}" />
+                                            </f:SimpleForm>
+                                            <Text text="{i18n>retryNote}" class="sapUiSmallMarginTop" />
+                                        </IconTabFilter>
+
+                                        <IconTabFilter key="items" icon="sap-icon://list" text="{i18n>tabItems}">
+                                            <Table items="{items}">
+                                                <columns>
+                                                    <Column width="5rem"><Text text="#" /></Column>
+                                                    <Column><Text text="{i18n>colMaterial}" /></Column>
+                                                    <Column><Text text="{i18n>colDescription}" /></Column>
+                                                    <Column hAlign="End"><Text text="{i18n>colQty}" /></Column>
+                                                    <Column hAlign="End"><Text text="{i18n>colUnitPrice}" /></Column>
+                                                    <Column hAlign="End"><Text text="{i18n>colNet}" /></Column>
+                                                    <Column><Text text="{i18n>colNeedBy}" /></Column>
+                                                </columns>
+                                                <items>
+                                                    <ColumnListItem>
+                                                        <cells>
+                                                            <Text text="{itemNo}" />
+                                                            <Text text="{material}" />
+                                                            <Text text="{description}" />
+                                                            <Text text="{ path: 'quantity', type: 'sap.ui.model.odata.type.Decimal', constraints: { precision: 13, scale: 3 }, formatOptions: { minFractionDigits: 0, maxFractionDigits: 3 } } {uom}" />
+                                                            <Text text="{ path: 'unitPrice', type: 'sap.ui.model.odata.type.Decimal', constraints: { precision: 15, scale: 2 } }" />
+                                                            <Text text="{ path: 'netAmount', type: 'sap.ui.model.odata.type.Decimal', constraints: { precision: 15, scale: 2 } }" />
+                                                            <Text text="{ path: 'needByDate', type: 'sap.ui.model.odata.type.Date' }" />
+                                                        </cells>
+                                                    </ColumnListItem>
+                                                </items>
+                                            </Table>
+                                        </IconTabFilter>
+
+                                        <IconTabFilter key="history" icon="sap-icon://history" text="{i18n>tabHistory}">
+                                            <Table items="{decisions}">
+                                                <columns>
+                                                    <Column width="5rem"><Text text="{i18n>colStep}" /></Column>
+                                                    <Column><Text text="{i18n>colRole}" /></Column>
+                                                    <Column><Text text="{i18n>colDecision}" /></Column>
+                                                    <Column><Text text="{i18n>colComment}" /></Column>
+                                                    <Column><Text text="{i18n>colDecidedBy}" /></Column>
+                                                    <Column><Text text="{i18n>colDecidedAt}" /></Column>
+                                                </columns>
+                                                <items>
+                                                    <ColumnListItem>
+                                                        <cells>
+                                                            <Text text="{stepNo}" />
+                                                            <Text text="{role}" />
+                                                            <ObjectStatus text="{decision}" state="{ path: 'decision', formatter: '.formatState' }" />
+                                                            <Text text="{comment}" />
+                                                            <Text text="{decidedBy}" />
+                                                            <Text text="{ path: 'decidedAt', type: 'sap.ui.model.odata.type.DateTimeOffset', constraints: { precision: 7 } }" />
+                                                        </cells>
+                                                    </ColumnListItem>
+                                                </items>
+                                            </Table>
+                                        </IconTabFilter>
+
+                                    </items>
+                                </IconTabBar>
+                            </content>
+                            <buttons>
+                                <Button text="{i18n>release}" type="Accept" icon="sap-icon://paper-plane"
+                                        enabled="{= ${status} === 'Approved' }" press=".onRelease" />
+                                <Button text="{i18n>retry}" type="Emphasized" icon="sap-icon://synchronize"
+                                        enabled="{= ${status} === 'Failed' }" press=".onRetry" />
+                                <Button text="{i18n>close}" press=".onCloseDetails" />
+                            </buttons>
+                        </Dialog>
+
+                    </dependents>
+                </Page>
+
+                <!-- ========== PAGE 2: HAND-OFF QUEUE ========== -->
+                <Page id="queuePage" showHeader="false">
+                    <content>
+                        <VBox class="prContent">
+
+                            <MessageStrip text="{i18n>errNoRole}" type="Error" showIcon="true"
+                                          visible="{ui>/forbidden}" class="sapUiSmallMarginBottom" />
+
+                            <Title text="{i18n>queueHero}" level="H2" titleStyle="H2" />
+                            <Text text="{i18n>queueSub}" class="prMuted sapUiSmallMarginBottom" />
+
+                            <Table id="handoffTable"
+                                   growing="true" growingThreshold="20" sticky="ColumnHeaders,HeaderToolbar"
+                                   noDataText="{i18n>noRows}"
+                                   updateFinished=".onUpdateFinished"
+                                   items="{
+                                       path: '/Requisitions',
+                                       parameters: { $orderby: 'modifiedAt', $count: true },
+                                       filters: [{ path: 'status', operator: 'EQ', value1: 'Approved' }]
+                                   }">
+
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <Title text="{i18n>queueTitle} ({ui>/count})" />
+                                        <ToolbarSpacer />
+                                        <Select width="11rem" selectedKey="{ui>/stateFilter}" change=".onFilterChange">
+                                            <core:Item key="Approved" text="{i18n>fReady}" />
+                                            <core:Item key="Failed" text="{i18n>fFailed}" />
+                                            <core:Item key="Published" text="{i18n>fPublished}" />
+                                            <core:Item key="All" text="{i18n>fAll}" />
+                                        </Select>
+                                        <DateRangeSelection width="14rem" displayFormat="medium"
+                                                            placeholder="{i18n>changedBetween}"
+                                                            change=".onDateChange" />
+                                        <SearchField width="15rem" placeholder="{i18n>searchPlaceholder}" search=".onSearch" />
+                                        <Button icon="sap-icon://refresh" tooltip="{i18n>refresh}" press=".onRefresh" />
+                                    </OverflowToolbar>
+                                </headerToolbar>
+
+                                <columns>
+                                    <Column><Text text="{i18n>colReqNo}" /></Column>
+                                    <Column><Text text="{i18n>colTitle}" /></Column>
+                                    <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colRequester}" /></Column>
+                                    <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colCostCentre}" /></Column>
+                                    <Column hAlign="End"><Text text="{i18n>colAmount}" /></Column>
+                                    <Column><Text text="{i18n>colStatus}" /></Column>
+                                    <Column minScreenWidth="Tablet" demandPopin="true"><Text text="{i18n>colPo}" /></Column>
+                                    <Column minScreenWidth="Desktop" demandPopin="true"><Text text="{i18n>colAttempts}" /></Column>
+                                    <Column minScreenWidth="Desktop" demandPopin="true"><Text text="{i18n>colChanged}" /></Column>
+                                    <Column width="8rem" hAlign="End"><Text text="{i18n>colActions}" /></Column>
+                                </columns>
+
+                                <items>
+                                    <ColumnListItem type="Navigation" press=".onRowPress">
+                                        <cells>
+                                            <ObjectIdentifier title="{reqNumber}" text="{projectRef}" />
+                                            <Text text="{title}" />
+                                            <Text text="{requester}" />
+                                            <Text text="{costCentre_code}" />
+                                            <ObjectNumber
+                                                number="{ path: 'totalAmount', type: 'sap.ui.model.odata.type.Decimal', constraints: { precision: 15, scale: 2 } }"
+                                                unit="{currency_code}" />
+                                            <ObjectStatus text="{status}" state="{ path: 'status', formatter: '.formatState' }" />
+                                            <Text text="{erpReference/poNumber}" />
+                                            <Text text="{erpReference/attempts}" />
+                                            <Text text="{ path: 'modifiedAt', type: 'sap.ui.model.odata.type.DateTimeOffset', constraints: { precision: 7 } }" />
+                                            <HBox justifyContent="End">
+                                                <Button icon="sap-icon://paper-plane" type="Transparent" tooltip="{i18n>release}"
+                                                        enabled="{= ${status} === 'Approved' }" press=".onRelease" />
+                                                <Button icon="sap-icon://synchronize" type="Transparent" tooltip="{i18n>retry}"
+                                                        enabled="{= ${status} === 'Failed' }" press=".onRetry" />
+                                            </HBox>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+
+                        </VBox>
+                    </content>
+                </Page>
+
+            </NavContainer>
+
+            <!-- ========== ASSISTANT PANEL (floating) ========== -->
+            <VBox id="chatPanel" class="prChat" visible="{chat>/open}">
+                <OverflowToolbar>
+                    <core:Icon src="sap-icon://discussion" class="sapUiTinyMarginEnd" />
+                    <Title text="{i18n>aiTitle}" />
+                    <ToolbarSpacer />
+                    <Button icon="sap-icon://decline" type="Transparent" tooltip="{i18n>close}"
+                            press=".onToggleChat" />
+                </OverflowToolbar>
+
+                <ScrollContainer id="chatScroll" height="18rem" vertical="true" horizontal="false">
+                    <VBox items="{chat>/messages}" class="sapUiTinyMargin">
+                        <VBox class="prChatMsg">
+                            <customData>
+                                <core:CustomData key="role" value="{chat>role}" writeToDom="true" />
+                            </customData>
+                            <Text text="{chat>text}" class="prChatBubble" />
+                            <HBox visible="{chat>pending}" class="sapUiTinyMarginTop">
+                                <Button text="{i18n>aiConfirm}" type="Emphasized" press=".onChatConfirm"
+                                        class="sapUiTinyMarginEnd" />
+                                <Button text="{i18n>aiDismiss}" press=".onChatDismiss" />
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </ScrollContainer>
+
+                <HBox wrap="Wrap" items="{chat>/chips}" class="sapUiTinyMarginBeginEnd">
+                    <Button text="{chat>text}" type="Transparent" press=".onChip" class="sapUiTinyMarginEnd" />
+                </HBox>
+
+                <HBox class="sapUiTinyMargin" alignItems="Center">
+                    <Input id="chatInput" placeholder="{i18n>aiPlaceholder}" submit=".onChatSend">
+                        <layoutData><FlexItemData growFactor="1" /></layoutData>
+                    </Input>
+                    <Button icon="sap-icon://paper-plane" type="Emphasized" tooltip="{i18n>aiSend}"
+                            press=".onChatSend" class="sapUiTinyMarginBegin" />
+                </HBox>
+            </VBox>
+
+        </tnt:mainContents>
+    </tnt:ToolPage>
+</mvc:View>

@@ -1,0 +1,1265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Capabilities.V1.xml">
+        <edmx:Include Alias="Capabilities" Namespace="Org.OData.Capabilities.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml">
+        <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Validation.V1.xml">
+        <edmx:Include Alias="Validation" Namespace="Org.OData.Validation.V1"/>
+    </edmx:Reference>
+    <edmx:DataServices>
+        <Schema Namespace="RequisitionService" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+            <Annotation Term="Core.Links">
+                <Collection>
+                    <Record>
+                        <PropertyValue Property="rel" String="author"/>
+                        <PropertyValue Property="href" String="https://cap.cloud.sap"/>
+                    </Record>
+                </Collection>
+            </Annotation>
+            <EntityContainer Name="EntityContainer">
+                <EntitySet Name="Materials" EntityType="RequisitionService.Materials">
+                    <NavigationPropertyBinding Path="currency" Target="Currencies"/>
+                </EntitySet>
+                <EntitySet Name="Requisitions" EntityType="RequisitionService.Requisitions">
+                    <NavigationPropertyBinding Path="costCentre" Target="CostCentres"/>
+                    <NavigationPropertyBinding Path="category" Target="PurchaseCategories"/>
+                    <NavigationPropertyBinding Path="currency" Target="Currencies"/>
+                    <NavigationPropertyBinding Path="items" Target="RequisitionItems"/>
+                    <NavigationPropertyBinding Path="decisions" Target="ApprovalDecisions"/>
+                    <NavigationPropertyBinding Path="tasks" Target="ApprovalTasks"/>
+                    <NavigationPropertyBinding Path="attachments" Target="Attachments"/>
+                    <NavigationPropertyBinding Path="erpReference" Target="ERPReferences"/>
+                </EntitySet>
+                <EntitySet Name="RequisitionItems" EntityType="RequisitionService.RequisitionItems">
+                    <NavigationPropertyBinding Path="requisition" Target="Requisitions"/>
+                </EntitySet>
+                <EntitySet Name="Attachments" EntityType="RequisitionService.Attachments">
+                    <NavigationPropertyBinding Path="requisition" Target="Requisitions"/>
+                </EntitySet>
+                <EntitySet Name="ApprovalDecisions" EntityType="RequisitionService.ApprovalDecisions">
+                    <NavigationPropertyBinding Path="requisition" Target="Requisitions"/>
+                </EntitySet>
+                <EntitySet Name="ApprovalTasks" EntityType="RequisitionService.ApprovalTasks">
+                    <NavigationPropertyBinding Path="requisition" Target="Requisitions"/>
+                </EntitySet>
+                <EntitySet Name="ERPReferences" EntityType="RequisitionService.ERPReferences">
+                    <NavigationPropertyBinding Path="requisition" Target="Requisitions"/>
+                </EntitySet>
+                <EntitySet Name="CostCentres" EntityType="RequisitionService.CostCentres">
+                    <NavigationPropertyBinding Path="currency" Target="Currencies"/>
+                </EntitySet>
+                <EntitySet Name="PurchaseCategories" EntityType="RequisitionService.PurchaseCategories"/>
+                <EntitySet Name="MyTasks" EntityType="RequisitionService.MyTasks">
+                    <NavigationPropertyBinding Path="requisition" Target="Requisitions"/>
+                    <NavigationPropertyBinding Path="currency" Target="Currencies"/>
+                </EntitySet>
+                <EntitySet Name="ApprovalInbox" EntityType="RequisitionService.ApprovalInbox">
+                    <NavigationPropertyBinding Path="requisition" Target="Requisitions"/>
+                    <NavigationPropertyBinding Path="costCentre" Target="CostCentres"/>
+                    <NavigationPropertyBinding Path="category" Target="PurchaseCategories"/>
+                    <NavigationPropertyBinding Path="currency" Target="Currencies"/>
+                </EntitySet>
+                <EntitySet Name="ProcurementQueue" EntityType="RequisitionService.ProcurementQueue">
+                    <NavigationPropertyBinding Path="currency" Target="Currencies"/>
+                </EntitySet>
+                <EntitySet Name="Currencies" EntityType="RequisitionService.Currencies">
+                    <NavigationPropertyBinding Path="texts" Target="Currencies_texts"/>
+                    <NavigationPropertyBinding Path="localized" Target="Currencies_texts"/>
+                </EntitySet>
+                <EntitySet Name="Currencies_texts" EntityType="RequisitionService.Currencies_texts"/>
+            </EntityContainer>
+            <EntityType Name="Materials">
+                <Key>
+                    <PropertyRef Name="code"/>
+                </Key>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="code" Type="Edm.String" MaxLength="40" Nullable="false"/>
+                <Property Name="description" Type="Edm.String" MaxLength="200"/>
+                <Property Name="itemType" Type="Edm.String" MaxLength="10" DefaultValue="Material"/>
+                <Property Name="uom" Type="Edm.String" MaxLength="3" DefaultValue="EA"/>
+                <Property Name="unitPrice" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <NavigationProperty Name="currency" Type="RequisitionService.Currencies">
+                    <ReferentialConstraint Property="currency_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+                <Property Name="active" Type="Edm.Boolean" DefaultValue="true"/>
+            </EntityType>
+            <EntityType Name="Requisitions">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="reqNumber" Type="Edm.String" MaxLength="20"/>
+                <Property Name="title" Type="Edm.String" MaxLength="120"/>
+                <Property Name="justification" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="requester" Type="Edm.String" MaxLength="100"/>
+                <NavigationProperty Name="costCentre" Type="RequisitionService.CostCentres">
+                    <ReferentialConstraint Property="costCentre_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="costCentre_code" Type="Edm.String" MaxLength="10"/>
+                <NavigationProperty Name="category" Type="RequisitionService.PurchaseCategories">
+                    <ReferentialConstraint Property="category_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="category_code" Type="Edm.String" MaxLength="10"/>
+                <Property Name="projectRef" Type="Edm.String" MaxLength="40"/>
+                <Property Name="deliveryLocation" Type="Edm.String" MaxLength="100"/>
+                <NavigationProperty Name="currency" Type="RequisitionService.Currencies">
+                    <ReferentialConstraint Property="currency_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+                <Property Name="netAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="taxAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="totalAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="status" Type="Edm.String" MaxLength="15" DefaultValue="Draft"/>
+                <Property Name="currentStep" Type="Edm.Int32" DefaultValue="0"/>
+                <Property Name="cancellationReason" Type="Edm.String" MaxLength="500"/>
+                <NavigationProperty Name="items" Type="Collection(RequisitionService.RequisitionItems)" Partner="requisition">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="decisions" Type="Collection(RequisitionService.ApprovalDecisions)" Partner="requisition">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="tasks" Type="Collection(RequisitionService.ApprovalTasks)" Partner="requisition">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="attachments" Type="Collection(RequisitionService.Attachments)" Partner="requisition">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="erpReference" Type="RequisitionService.ERPReferences" Partner="requisition">
+                    <OnDelete Action="Cascade"/>
+                    <ReferentialConstraint Property="ID" ReferencedProperty="requisition_ID"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="RequisitionItems">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="requisition" Type="RequisitionService.Requisitions" Partner="items">
+                    <ReferentialConstraint Property="requisition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="requisition_ID" Type="Edm.Guid"/>
+                <Property Name="itemNo" Type="Edm.Int32"/>
+                <Property Name="itemType" Type="Edm.String" MaxLength="10" DefaultValue="Material"/>
+                <Property Name="material" Type="Edm.String" MaxLength="40"/>
+                <Property Name="description" Type="Edm.String" MaxLength="200"/>
+                <Property Name="quantity" Type="Edm.Decimal" Precision="13" Scale="3"/>
+                <Property Name="uom" Type="Edm.String" MaxLength="3" DefaultValue="EA"/>
+                <Property Name="unitPrice" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="taxRate" Type="Edm.Decimal" Precision="5" Scale="2"/>
+                <Property Name="netAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="taxAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="grossAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="needByDate" Type="Edm.Date"/>
+                <Property Name="deliveryLocation" Type="Edm.String" MaxLength="100"/>
+            </EntityType>
+            <EntityType Name="Attachments">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <NavigationProperty Name="requisition" Type="RequisitionService.Requisitions" Partner="attachments">
+                    <ReferentialConstraint Property="requisition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="requisition_ID" Type="Edm.Guid"/>
+                <Property Name="fileName" Type="Edm.String" MaxLength="255"/>
+                <Property Name="mediaType" Type="Edm.String" MaxLength="100"/>
+                <Property Name="size" Type="Edm.Int32"/>
+                <Property Name="content" Type="Edm.Binary"/>
+            </EntityType>
+            <EntityType Name="ApprovalDecisions">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="requisition" Type="RequisitionService.Requisitions" Partner="decisions">
+                    <ReferentialConstraint Property="requisition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="requisition_ID" Type="Edm.Guid"/>
+                <Property Name="stepNo" Type="Edm.Int32"/>
+                <Property Name="role" Type="Edm.String" MaxLength="10"/>
+                <Property Name="decision" Type="Edm.String" MaxLength="10"/>
+                <Property Name="comment" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="decidedBy" Type="Edm.String" MaxLength="100"/>
+                <Property Name="decidedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+            </EntityType>
+            <EntityType Name="ApprovalTasks">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="requisition" Type="RequisitionService.Requisitions" Partner="tasks">
+                    <ReferentialConstraint Property="requisition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="requisition_ID" Type="Edm.Guid"/>
+                <Property Name="stepNo" Type="Edm.Int32"/>
+                <Property Name="role" Type="Edm.String" MaxLength="10"/>
+                <Property Name="assignedTo" Type="Edm.String" MaxLength="100"/>
+                <Property Name="state" Type="Edm.String" MaxLength="10" DefaultValue="Open"/>
+                <Property Name="actedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+            </EntityType>
+            <EntityType Name="ERPReferences">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <NavigationProperty Name="requisition" Type="RequisitionService.Requisitions" Partner="erpReference">
+                    <ReferentialConstraint Property="requisition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="requisition_ID" Type="Edm.Guid"/>
+                <Property Name="poNumber" Type="Edm.String" MaxLength="20"/>
+                <Property Name="publicationStatus" Type="Edm.String" MaxLength="10" DefaultValue="Pending"/>
+                <Property Name="idempotencyKey" Type="Edm.Guid"/>
+                <Property Name="attempts" Type="Edm.Int32" DefaultValue="0"/>
+                <Property Name="lastError" Type="Edm.String" MaxLength="500"/>
+                <Property Name="lastAttemptAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="publishedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+            </EntityType>
+            <EntityType Name="CostCentres">
+                <Key>
+                    <PropertyRef Name="code"/>
+                </Key>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="code" Type="Edm.String" MaxLength="10" Nullable="false"/>
+                <Property Name="name" Type="Edm.String" MaxLength="100"/>
+                <Property Name="orgUnit" Type="Edm.String" MaxLength="20"/>
+                <Property Name="managerId" Type="Edm.String" MaxLength="100"/>
+                <Property Name="financeApproverId" Type="Edm.String" MaxLength="100"/>
+                <NavigationProperty Name="currency" Type="RequisitionService.Currencies">
+                    <ReferentialConstraint Property="currency_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+                <Property Name="budgetAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="committedAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="availableBudget" Type="Edm.Decimal" Precision="15" Scale="2"/>
+                <Property Name="active" Type="Edm.Boolean" DefaultValue="true"/>
+            </EntityType>
+            <EntityType Name="PurchaseCategories">
+                <Key>
+                    <PropertyRef Name="code"/>
+                </Key>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="code" Type="Edm.String" MaxLength="10" Nullable="false"/>
+                <Property Name="name" Type="Edm.String" MaxLength="100"/>
+                <Property Name="defaultTaxRate" Type="Edm.Decimal" Precision="5" Scale="2" DefaultValue="0"/>
+            </EntityType>
+            <EntityType Name="MyTasks">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="requisition" Type="RequisitionService.Requisitions">
+                    <ReferentialConstraint Property="requisition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="requisition_ID" Type="Edm.Guid"/>
+                <Property Name="stepNo" Type="Edm.Int32"/>
+                <Property Name="role" Type="Edm.String" MaxLength="10"/>
+                <Property Name="assignedTo" Type="Edm.String" MaxLength="100"/>
+                <Property Name="state" Type="Edm.String" MaxLength="10" DefaultValue="Open"/>
+                <Property Name="actedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="reqNumber" Type="Edm.String" MaxLength="20"/>
+                <Property Name="title" Type="Edm.String" MaxLength="120"/>
+                <Property Name="requester" Type="Edm.String" MaxLength="100"/>
+                <Property Name="totalAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <NavigationProperty Name="currency" Type="RequisitionService.Currencies">
+                    <ReferentialConstraint Property="currency_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+            </EntityType>
+            <EntityType Name="ApprovalInbox">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <NavigationProperty Name="requisition" Type="RequisitionService.Requisitions">
+                    <ReferentialConstraint Property="requisition_ID" ReferencedProperty="ID"/>
+                </NavigationProperty>
+                <Property Name="requisition_ID" Type="Edm.Guid"/>
+                <Property Name="stepNo" Type="Edm.Int32"/>
+                <Property Name="role" Type="Edm.String" MaxLength="10"/>
+                <Property Name="assignedTo" Type="Edm.String" MaxLength="100"/>
+                <Property Name="state" Type="Edm.String" MaxLength="10" DefaultValue="Open"/>
+                <Property Name="actedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="reqNumber" Type="Edm.String" MaxLength="20"/>
+                <Property Name="title" Type="Edm.String" MaxLength="120"/>
+                <Property Name="justification" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="requester" Type="Edm.String" MaxLength="100"/>
+                <NavigationProperty Name="costCentre" Type="RequisitionService.CostCentres">
+                    <ReferentialConstraint Property="costCentre_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="costCentre_code" Type="Edm.String" MaxLength="10"/>
+                <NavigationProperty Name="category" Type="RequisitionService.PurchaseCategories">
+                    <ReferentialConstraint Property="category_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="category_code" Type="Edm.String" MaxLength="10"/>
+                <Property Name="projectRef" Type="Edm.String" MaxLength="40"/>
+                <Property Name="deliveryLocation" Type="Edm.String" MaxLength="100"/>
+                <NavigationProperty Name="currency" Type="RequisitionService.Currencies">
+                    <ReferentialConstraint Property="currency_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+                <Property Name="netAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="taxAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="totalAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <Property Name="status" Type="Edm.String" MaxLength="15" DefaultValue="Draft"/>
+                <Property Name="currentStep" Type="Edm.Int32" DefaultValue="0"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="isActionable" Type="Edm.Boolean"/>
+                <Property Name="taskCriticality" Type="Edm.Int32"/>
+            </EntityType>
+            <EntityType Name="ProcurementQueue">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="reqNumber" Type="Edm.String" MaxLength="20"/>
+                <Property Name="title" Type="Edm.String" MaxLength="120"/>
+                <Property Name="requester" Type="Edm.String" MaxLength="100"/>
+                <Property Name="totalAmount" Type="Edm.Decimal" Precision="15" Scale="2" DefaultValue="0"/>
+                <NavigationProperty Name="currency" Type="RequisitionService.Currencies">
+                    <ReferentialConstraint Property="currency_code" ReferencedProperty="code"/>
+                </NavigationProperty>
+                <Property Name="currency_code" Type="Edm.String" MaxLength="3"/>
+                <Property Name="status" Type="Edm.String" MaxLength="15" DefaultValue="Draft"/>
+                <Property Name="poNumber" Type="Edm.String" MaxLength="20"/>
+                <Property Name="publicationStatus" Type="Edm.String" MaxLength="10" DefaultValue="Pending"/>
+                <Property Name="attempts" Type="Edm.Int32" DefaultValue="0"/>
+                <Property Name="lastError" Type="Edm.String" MaxLength="500"/>
+            </EntityType>
+            <EntityType Name="Currencies">
+                <Key>
+                    <PropertyRef Name="code"/>
+                </Key>
+                <Property Name="name" Type="Edm.String" MaxLength="255"/>
+                <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
+                <Property Name="symbol" Type="Edm.String" MaxLength="5"/>
+                <Property Name="minorUnit" Type="Edm.Int16"/>
+                <NavigationProperty Name="texts" Type="Collection(RequisitionService.Currencies_texts)">
+                    <OnDelete Action="Cascade"/>
+                </NavigationProperty>
+                <NavigationProperty Name="localized" Type="RequisitionService.Currencies_texts">
+                    <ReferentialConstraint Property="code" ReferencedProperty="code"/>
+                </NavigationProperty>
+            </EntityType>
+            <EntityType Name="Currencies_texts">
+                <Key>
+                    <PropertyRef Name="locale"/>
+                    <PropertyRef Name="code"/>
+                </Key>
+                <Property Name="locale" Type="Edm.String" MaxLength="14" Nullable="false"/>
+                <Property Name="name" Type="Edm.String" MaxLength="255"/>
+                <Property Name="descr" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="code" Type="Edm.String" MaxLength="3" Nullable="false"/>
+            </EntityType>
+            <Action Name="submitForApproval" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.Requisitions"/>
+                <ReturnType Type="RequisitionService.Requisitions"/>
+            </Action>
+            <Action Name="approve" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.Requisitions"/>
+                <Parameter Name="comment" Type="Edm.String"/>
+                <ReturnType Type="RequisitionService.Requisitions"/>
+            </Action>
+            <Action Name="approve" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.ApprovalInbox"/>
+                <Parameter Name="comment" Type="Edm.String"/>
+                <ReturnType Type="RequisitionService.ApprovalInbox"/>
+            </Action>
+            <Action Name="reject" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.Requisitions"/>
+                <Parameter Name="comment" Type="Edm.String"/>
+                <ReturnType Type="RequisitionService.Requisitions"/>
+            </Action>
+            <Action Name="reject" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.ApprovalInbox"/>
+                <Parameter Name="comment" Type="Edm.String"/>
+                <ReturnType Type="RequisitionService.ApprovalInbox"/>
+            </Action>
+            <Action Name="returnForCorrection" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.Requisitions"/>
+                <Parameter Name="comment" Type="Edm.String"/>
+                <ReturnType Type="RequisitionService.Requisitions"/>
+            </Action>
+            <Action Name="returnForCorrection" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.ApprovalInbox"/>
+                <Parameter Name="comment" Type="Edm.String"/>
+                <ReturnType Type="RequisitionService.ApprovalInbox"/>
+            </Action>
+            <Action Name="cancel" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.Requisitions"/>
+                <Parameter Name="reason" Type="Edm.String"/>
+                <ReturnType Type="RequisitionService.Requisitions"/>
+            </Action>
+            <Action Name="release" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.Requisitions"/>
+                <ReturnType Type="RequisitionService.Requisitions"/>
+            </Action>
+            <Action Name="retryHandoff" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.Requisitions"/>
+                <ReturnType Type="RequisitionService.Requisitions"/>
+            </Action>
+            <Action Name="releaseToErp" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.ProcurementQueue"/>
+                <ReturnType Type="RequisitionService.ProcurementQueue"/>
+            </Action>
+            <Action Name="retryErpHandoff" IsBound="true" EntitySetPath="in">
+                <Parameter Name="in" Type="RequisitionService.ProcurementQueue"/>
+                <ReturnType Type="RequisitionService.ProcurementQueue"/>
+            </Action>
+            <Annotations Target="RequisitionService.EntityContainer/Materials">
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/description">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/itemType">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Material"/>
+                            <PropertyValue Property="Value" String="Material"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Service"/>
+                            <PropertyValue Property="Value" String="Service"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/unitPrice">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/currency">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Materials/currency_code">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Currency"/>
+                        <PropertyValue Property="CollectionPath" String="Currencies"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                                    <PropertyValue Property="ValueListProperty" String="code"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/title">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/requester">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/costCentre_code">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/category_code">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/currency">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/currency_code">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Currency"/>
+                        <PropertyValue Property="CollectionPath" String="Currencies"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                                    <PropertyValue Property="ValueListProperty" String="code"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Requisitions/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Draft"/>
+                            <PropertyValue Property="Value" String="Draft"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="InApproval"/>
+                            <PropertyValue Property="Value" String="InApproval"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Returned"/>
+                            <PropertyValue Property="Value" String="Returned"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Approved"/>
+                            <PropertyValue Property="Value" String="Approved"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Cancelled"/>
+                            <PropertyValue Property="Value" String="Cancelled"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Published"/>
+                            <PropertyValue Property="Value" String="Published"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Failed"/>
+                            <PropertyValue Property="Value" String="Failed"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.RequisitionItems/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.RequisitionItems/itemType">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Material"/>
+                            <PropertyValue Property="Value" String="Material"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Service"/>
+                            <PropertyValue Property="Value" String="Service"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.RequisitionItems/description">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.RequisitionItems/quantity">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.RequisitionItems/unitPrice">
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Estimated Unit Price"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.RequisitionItems/needByDate">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Attachments/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Attachments/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Attachments/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Attachments/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Attachments/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Attachments/mediaType">
+                <Annotation Term="Core.IsMediaType" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalDecisions/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalDecisions/role">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Manager"/>
+                            <PropertyValue Property="Value" String="Manager"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Finance"/>
+                            <PropertyValue Property="Value" String="Finance"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalDecisions/decision">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Approved"/>
+                            <PropertyValue Property="Value" String="Approved"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Returned"/>
+                            <PropertyValue Property="Value" String="Returned"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalTasks/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalTasks/role">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Manager"/>
+                            <PropertyValue Property="Value" String="Manager"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Finance"/>
+                            <PropertyValue Property="Value" String="Finance"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalTasks/state">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Open"/>
+                            <PropertyValue Property="Value" String="Open"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Done"/>
+                            <PropertyValue Property="Value" String="Done"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Skipped"/>
+                            <PropertyValue Property="Value" String="Skipped"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Cancelled"/>
+                            <PropertyValue Property="Value" String="Cancelled"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ERPReferences/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ERPReferences/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ERPReferences/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ERPReferences/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ERPReferences/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ERPReferences/publicationStatus">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Pending"/>
+                            <PropertyValue Property="Value" String="Pending"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Published"/>
+                            <PropertyValue Property="Value" String="Published"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Failed"/>
+                            <PropertyValue Property="Value" String="Failed"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/name">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/orgUnit">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/currency">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/currency_code">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Currency"/>
+                        <PropertyValue Property="CollectionPath" String="Currencies"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                                    <PropertyValue Property="ValueListProperty" String="code"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.CostCentres/availableBudget">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.PurchaseCategories/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.PurchaseCategories/createdBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Created By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.PurchaseCategories/modifiedAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Changed On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.PurchaseCategories/modifiedBy">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Common.Label" String="Changed By"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.PurchaseCategories/name">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.MyTasks/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.MyTasks/role">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Manager"/>
+                            <PropertyValue Property="Value" String="Manager"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Finance"/>
+                            <PropertyValue Property="Value" String="Finance"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.MyTasks/state">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Open"/>
+                            <PropertyValue Property="Value" String="Open"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Done"/>
+                            <PropertyValue Property="Value" String="Done"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Skipped"/>
+                            <PropertyValue Property="Value" String="Skipped"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Cancelled"/>
+                            <PropertyValue Property="Value" String="Cancelled"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.MyTasks/title">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.MyTasks/requester">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.MyTasks/currency">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.MyTasks/currency_code">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Currency"/>
+                        <PropertyValue Property="CollectionPath" String="Currencies"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                                    <PropertyValue Property="ValueListProperty" String="code"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.EntityContainer/ApprovalInbox">
+                <Annotation Term="Capabilities.DeleteRestrictions">
+                    <Record Type="Capabilities.DeleteRestrictionsType">
+                        <PropertyValue Property="Deletable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.InsertRestrictions">
+                    <Record Type="Capabilities.InsertRestrictionsType">
+                        <PropertyValue Property="Insertable" Bool="false"/>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Capabilities.UpdateRestrictions">
+                    <Record Type="Capabilities.UpdateRestrictionsType">
+                        <PropertyValue Property="Updatable" Bool="false"/>
+                    </Record>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/role">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Manager"/>
+                            <PropertyValue Property="Value" String="Manager"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Finance"/>
+                            <PropertyValue Property="Value" String="Finance"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/state">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Open"/>
+                            <PropertyValue Property="Value" String="Open"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Done"/>
+                            <PropertyValue Property="Value" String="Done"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Skipped"/>
+                            <PropertyValue Property="Value" String="Skipped"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Cancelled"/>
+                            <PropertyValue Property="Value" String="Cancelled"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/title">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/requester">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/costCentre_code">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/category_code">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/currency">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/currency_code">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Currency"/>
+                        <PropertyValue Property="CollectionPath" String="Currencies"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                                    <PropertyValue Property="ValueListProperty" String="code"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Draft"/>
+                            <PropertyValue Property="Value" String="Draft"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="InApproval"/>
+                            <PropertyValue Property="Value" String="InApproval"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Returned"/>
+                            <PropertyValue Property="Value" String="Returned"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Approved"/>
+                            <PropertyValue Property="Value" String="Approved"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Cancelled"/>
+                            <PropertyValue Property="Value" String="Cancelled"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Published"/>
+                            <PropertyValue Property="Value" String="Published"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Failed"/>
+                            <PropertyValue Property="Value" String="Failed"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/createdAt">
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+                <Annotation Term="UI.ExcludeFromNavigationContext" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Common.Label" String="Created On"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/isActionable">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ApprovalInbox/taskCriticality">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ProcurementQueue/ID">
+                <Annotation Term="Core.ComputedDefaultValue" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ProcurementQueue/title">
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ProcurementQueue/requester">
+                <Annotation Term="Core.Computed" Bool="true"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ProcurementQueue/currency">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ProcurementQueue/currency_code">
+                <Annotation Term="Common.Label" String="Currency"/>
+                <Annotation Term="Common.FieldControl" EnumMember="Common.FieldControlType/Mandatory"/>
+                <Annotation Term="Common.ValueList">
+                    <Record Type="Common.ValueListType">
+                        <PropertyValue Property="Label" String="Currency"/>
+                        <PropertyValue Property="CollectionPath" String="Currencies"/>
+                        <PropertyValue Property="Parameters">
+                            <Collection>
+                                <Record Type="Common.ValueListParameterInOut">
+                                    <PropertyValue Property="LocalDataProperty" PropertyPath="currency_code"/>
+                                    <PropertyValue Property="ValueListProperty" String="code"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="name"/>
+                                </Record>
+                            </Collection>
+                        </PropertyValue>
+                    </Record>
+                </Annotation>
+                <Annotation Term="Core.Description" String="Currency code as specified by ISO 4217"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.ProcurementQueue/status">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Draft"/>
+                            <PropertyValue Property="Value" String="Draft"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="InApproval"/>
+                            <PropertyValue Property="Value" String="InApproval"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Returned"/>
+                            <PropertyValue Property="Value" String="Returned"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Approved"/>
+                            <PropertyValue Property="Value" String="Approved"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Rejected"/>
+                            <PropertyValue Property="Value" String="Rejected"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Cancelled"/>
+                            <PropertyValue Property="Value" String="Cancelled"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Published"/>
+                            <PropertyValue Property="Value" String="Published"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Failed"/>
+                            <PropertyValue Property="Value" String="Failed"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.ProcurementQueue/publicationStatus">
+                <Annotation Term="Validation.AllowedValues">
+                    <Collection>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Pending"/>
+                            <PropertyValue Property="Value" String="Pending"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Published"/>
+                            <PropertyValue Property="Value" String="Published"/>
+                        </Record>
+                        <Record Type="Validation.AllowedValue">
+                            <Annotation Term="Core.SymbolicName" String="Failed"/>
+                            <PropertyValue Property="Value" String="Failed"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies">
+                <Annotation Term="UI.Identification">
+                    <Collection>
+                        <Record Type="UI.DataField">
+                            <PropertyValue Property="Value" Path="name"/>
+                        </Record>
+                    </Collection>
+                </Annotation>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies/name">
+                <Annotation Term="Common.Label" String="Name"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies/descr">
+                <Annotation Term="Common.Label" String="Description"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies/code">
+                <Annotation Term="Common.Text" Path="name"/>
+                <Annotation Term="Common.Label" String="Currency Code"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies/symbol">
+                <Annotation Term="Common.Label" String="Currency Symbol"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies/minorUnit">
+                <Annotation Term="Common.Label" String="Currency Minor Unit Fractions"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies_texts/locale">
+                <Annotation Term="Common.Label" String="Language Code"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies_texts/name">
+                <Annotation Term="Common.Label" String="Name"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies_texts/descr">
+                <Annotation Term="Common.Label" String="Description"/>
+            </Annotations>
+            <Annotations Target="RequisitionService.Currencies_texts/code">
+                <Annotation Term="Common.Text" Path="name"/>
+                <Annotation Term="Common.Label" String="Currency Code"/>
+            </Annotations>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>
